@@ -57,7 +57,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 $(OBJ_DIR)/%.o: $(TEST_DIR)/%.c
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR):
+ $(OBJ_DIR):
 	@mkdir -p $@
 
 $(OBJS): | $(OBJ_DIR)

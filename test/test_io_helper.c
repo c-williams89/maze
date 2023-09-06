@@ -19,6 +19,18 @@ START_TEST(test_validate_file_invalid) {
                 FILE *fp = fopen(invalid_files[i], "r");
                 ck_assert_int_eq(validate_file(fp), 0);
         }
+
+        FILE *invalid_streams[] = {
+                stdin,
+                stdout,
+                stderr
+        };
+
+        for (int i = 0; i < 3; ++i) {
+                ck_assert_int_eq(validate_file(invalid_streams[i]), 0);
+
+        }
+
 } END_TEST
 
 
