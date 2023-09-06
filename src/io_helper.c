@@ -42,7 +42,7 @@ EXIT:
 
 // TODO: Build a struct for map information, rows, columns, start, and end to pass that 
 //  struct around where needed
-
+// NOTE: Consider moving to the matrix helper source
 graph_data * get_graph_size(FILE *fp) {
         graph_data *graph = calloc(1, sizeof(*graph));
         if (!graph) {
