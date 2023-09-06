@@ -1,8 +1,12 @@
 #ifndef IO_HELPER_H
 	#define IO_HELPER_H
+	typedef struct graph_data {
+        	uint16_t rows;
+        	uint16_t cols;
+	} graph_data;
+	// typedef struct graph_data graph_data;
 	int validate_file(FILE *fp);
-	uint16_t get_max_rows(FILE *fp);
-	uint16_t get_max_cols(FILE *fp);
+	graph_data * get_graph_size(FILE *fp);
 #endif
 
 
