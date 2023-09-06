@@ -1,14 +1,20 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <unistd.h>
+#include <errno.h>
 #include <stdint.h>
 #include <limits.h>
 
+typedef struct graph_data {
+        uint16_t rows;
+        uint16_t cols;
+} graph_data;
 
 int validate_file(FILE *fp) {
         struct stat path_stat;
         int exit_status = 0;
+        int fileno(FILE *fp);
         int fd = fileno(fp);  
 
         // Tests that fstat does not fail
@@ -37,16 +43,29 @@ EXIT:
 // TODO: Build a struct for map information, rows, columns, start, and end to pass that 
 //  struct around where needed
 
-uint16_t get_max_rows(FILE *fp) {
-        uint16_t rows = 0;
+graph_data * get_graph_size(FILE *fp) {
+        graph_data *graph = calloc(1, sizeof(*graph));
+        if (!graph) {
+                perror("get_graph_size: Error allocating memory\n");
+                errno = 0;
+                goto EXIT;
+        }
+        graph->cols = 0;
+        graph->rows = 1;
         uint16_t cols = 0;
         char c = '\0';
-        // while (!feof(fp)) {
-        //         continue;
-        // }
-        return -1;
-}
-
-uint16_t get_max_cols(FILE *fp) {
-        return -1;
+        while ((c = fgetc(fp)) != EOF) {
+                if ('\n' == c) {
+                        if (cols > graph->cols) {
+                                graph->cols = cols;
+                        }
+                        cols = 0;
+                        graph->rows++;
+                        continue;
+                }
+                ++cols;
+        }
+        printf("Rows: %d\tCols: %d\n", graph->rows, graph->cols);
+EXIT:
+        return graph;
 }

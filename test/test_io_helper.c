@@ -9,7 +9,7 @@ START_TEST(test_validate_file_valid) {
 } END_TEST
 
 START_TEST(test_validate_file_invalid) {
-        char *invalid_files[] = {
+        const char *invalid_files[] = {
                 "/dev/null",
                 "/dev/urandom",
                 "/dev/zero"
@@ -33,9 +33,12 @@ START_TEST(test_validate_file_invalid) {
 
 } END_TEST
 
-START_TEST(test_get_max_rows_pass) {
+START_TEST(test_get_graph_size_pass) {
         FILE *fp = fopen("./data/valid_map.txt", "r");
-        ck_assert_int_eq(get_max_rows(fp), 8);
+        graph_data *graph = get_graph_size(fp);
+        ck_assert_ptr_ne(graph, NULL);
+        ck_assert_int_eq(graph->rows, 8);
+        ck_assert_int_eq(graph->cols, 23);
 } END_TEST
 
 
@@ -43,7 +46,7 @@ START_TEST(test_get_max_rows_pass) {
 static TFun core_tests[] = {
         test_validate_file_valid,
         test_validate_file_invalid,
-        test_get_max_rows_pass,
+        test_get_graph_size_pass,
         NULL
 };
 
