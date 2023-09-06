@@ -33,12 +33,17 @@ START_TEST(test_validate_file_invalid) {
 
 } END_TEST
 
+START_TEST(test_get_max_rows_pass) {
+        FILE *fp = fopen("./data/valid_map.txt", "r");
+        ck_assert_int_eq(get_max_rows(fp), 8);
+} END_TEST
 
 
 
 static TFun core_tests[] = {
         test_validate_file_valid,
         test_validate_file_invalid,
+        test_get_max_rows_pass,
         NULL
 };
 

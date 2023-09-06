@@ -2,8 +2,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <unistd.h>
-
-
+#include <stdint.h>
+#include <limits.h>
 
 
 int validate_file(FILE *fp) {
@@ -32,4 +32,21 @@ int validate_file(FILE *fp) {
 
 EXIT:
         return exit_status;
+}
+
+// TODO: Build a struct for map information, rows, columns, start, and end to pass that 
+//  struct around where needed
+
+uint16_t get_max_rows(FILE *fp) {
+        uint16_t rows = 0;
+        uint16_t cols = 0;
+        char c = '\0';
+        // while (!feof(fp)) {
+        //         continue;
+        // }
+        return -1;
+}
+
+uint16_t get_max_cols(FILE *fp) {
+        return -1;
 }
