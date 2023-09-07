@@ -38,7 +38,7 @@ llist_t *llist_create();
  * @return true On success
  * @return false On failure
  */
-bool llist_enqueue(llist_t *llist, vertex_t *data);
+// bool llist_enqueue(llist_t *llist, vertex_t *data);
 
 /**
  * @brief Removes void* from linked-list as a queue
@@ -58,7 +58,7 @@ void *llist_dequeue(llist_t *llist);
  * @return true On success
  * @return false On failure
  */
-bool llist_push(llist_t *llist, vertex_t *data);
+// bool llist_push(llist_t *llist, vertex_t *data);
 
 /**
  * @brief Removes void* from linked-list as a stack

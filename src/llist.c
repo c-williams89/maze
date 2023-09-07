@@ -2,6 +2,7 @@
 
 #include "../include/llist.h"
 
+/*
 struct node_t {
 	struct node_t *next;
 	vertex_t *data;
@@ -22,7 +23,7 @@ llist_t *llist_create()
 	llist_t *llist = calloc(1, sizeof(*llist));
 
 	return llist;
-}				/* llist_create() */
+}				llist_create()
 
 // void llist_delete(llist_t ** p_llist)
 // {
@@ -36,7 +37,7 @@ llist_t *llist_create()
 // 	(*p_llist)->tail = NULL;
 // 	free(*p_llist);
 // 	*p_llist = NULL;
-// }				/* llist_delete() */
+// }				llist_delete()
 
 // static void llist_delete_nodes(llist_t * llist)
 // {
@@ -54,7 +55,7 @@ llist_t *llist_create()
 // 		free(temp);
 // 		temp = NULL;
 // 	}
-// }				/* llist_delete_nodes() */
+// }			
 
 bool llist_enqueue(llist_t * llist, vertex_t * data)
 {
@@ -80,7 +81,7 @@ bool llist_enqueue(llist_t * llist, vertex_t * data)
 	++llist->sz;
 
 	return true;
-}				/* llist_enqueue() */
+}				llist_enqueue()
 
 // bool llist_dequeue(llist_t * llist, vertex ** data)
 // {
@@ -115,7 +116,7 @@ bool llist_enqueue(llist_t * llist, vertex_t * data)
 
 //  DEQUEUE:
 // 	return ret;
-// }				/* llist_dequeue() */
+// }				llist_dequeue()
 
 void *llist_dequeue(llist_t * list)
 {
@@ -150,12 +151,12 @@ bool llist_push(llist_t * llist, vertex_t * data)
 	++llist->sz;
 
 	return true;
-}				/* llist_push() */
+}			 llist_push()
 
 // inline bool llist_pop(llist_t * llist, vertex ** data)
 // {
 // 	return llist_dequeue(llist, data);
-// }				/* llist_pop() */
+// }				llist_pop()
 
 bool llist_is_empty(llist_t * llist)
 {
@@ -163,15 +164,14 @@ bool llist_is_empty(llist_t * llist)
 		return false;
 	}
 	return llist->sz > 0 ? false : true;
-}				/* llist_is_empty() */
-
+}				llist_is_empty()
 uint64_t llist_get_size(llist_t * llist)
 {
 	if (!llist) {
 		return 0;
 	}
 	return llist->sz;
-}				/* llist_get_size() */
+}				llist_get_size() 
 
 void llist_purge(llist_t * llist)
 {
@@ -188,7 +188,7 @@ void llist_purge(llist_t * llist)
 	}
 	llist->head = NULL;
 	llist->tail = NULL;
-}				/* llist_purge() */
+}				llist_purge()
 
 // vertex_t *llist_find(llist_t * llist, const char *id)
 // {
@@ -231,3 +231,5 @@ llist_t *llist_duplicate(llist_t * llist)
 	}
 	return copy;
 }
+
+*/
