@@ -3,20 +3,25 @@
 #include <stdint.h>
 #include <limits.h>
 
-enum { SPACE = 1, WALL = 11, WATER = 3 };
+#include "../include/llist.h"
+
+enum { SPACE = 1, WALL = 11, WATER = 3, END = 1, START = 0 };
 
 typedef struct vertex_t {
         struct vertex_t *parent;
-        struct edge *neighbors;
+        struct edge_t *neighbors;
         char value;
         int level;
         int num_children;
 } vertex_t;
 
-typedef struct edge {
+typedef struct edge_t {
         vertex_t *destination;
-        struct edge *next;
-} edge;
+        struct edge_t *next;
+} edge_t;
+
+static void matrix_add_edge(vertex_t *current, vertex_t *neighbor);
+static void bfs(vertex_t **matrix, vertex_t *start, vertex_t *end);
 
 vertex_t **matrix_create(FILE *fp, uint16_t rows, uint16_t cols) {
         // TODO: Possible boolean to track valid/invalid map?
@@ -44,9 +49,11 @@ vertex_t **matrix_create(FILE *fp, uint16_t rows, uint16_t cols) {
                                 // (matrix[row] + col)->level = INT_MAX;
                                 start = matrix[row] + col;
                                 start->level = INT_MAX;
+                                start->value = START;
                                 break;                        
                         case '>':
                                 end = matrix[row] + col;
+                                end->value = END;
                                 break;
                         case '#':
                                 matrix[row][col].value = WALL;
@@ -67,6 +74,7 @@ EXIT:
         return matrix;
 }
 
+// NOTE: This function could probably be static as well.
 vertex_t **matrix_enrich(vertex_t **matrix, uint16_t rows, uint16_t cols) {
         vertex_t *current = NULL;
         vertex_t *neighbor = NULL;
@@ -83,10 +91,10 @@ vertex_t **matrix_enrich(vertex_t **matrix, uint16_t rows, uint16_t cols) {
                         
                                 if ((tgt_x > -1) && (tgt_x < rows) && (tgt_y > -1) && (tgt_y < cols)) {
                                         neighbor = &(matrix[tgt_x][tgt_y]);
-                                        // if (neighbor->value < (current->value + 2)) {
-                                                // add_edge(current, neighbor);
-                                                current->num_children += 1;
-                                        // }
+                                        if (neighbor->value != 28) {
+                                                matrix_add_edge(current, neighbor);
+                                        }
+                                        current->num_children += 1;
                                 }
 
                         }        
@@ -94,3 +102,46 @@ vertex_t **matrix_enrich(vertex_t **matrix, uint16_t rows, uint16_t cols) {
         }
         return matrix;
 }
+
+static void matrix_add_edge(vertex_t *current, vertex_t *neighbor) {
+        edge_t *new_edge = calloc(1, sizeof(*new_edge));
+
+        new_edge->destination = neighbor;
+        new_edge->next = current->neighbors;
+        current->neighbors = new_edge;
+}
+
+static void bfs(vertex_t **matrix, vertex_t *start, vertex_t *end) {
+        llist_t *queue = llist_create();
+        llist_enqueue(queue, start);
+        // TODO: For Djikstras, priority queue must be implemented here
+        int level = 0;
+        while(!llist_is_empty(queue)) {
+                vertex_t *node = (vertex_t *)llist_dequeue(queue);          
+                edge_t *current = node->neighbors;
+                if (!current) {
+                        return;
+                }
+
+                do {
+                        if (!current->destination->level) {
+                                current->destination->level = level + 1;
+                                current->destination->parent = node;
+                                llist_enqueue(queue, current->destination);
+                        }
+                        current = current->next;
+                } while (current); 
+                level += 1;
+        }
+
+        llist_t *stack = llist_create();
+        vertex_t *node = end;
+        int counter = 0;
+        while (node != node->parent) {
+                node->value = '+';
+                llist_push(stack, node);
+                node = node->parent;
+                ++counter;
+        }
+        printf("From end to start: %d\n", counter);
+} 
