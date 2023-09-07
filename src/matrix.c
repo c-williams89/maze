@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <limits.h>
 #include <errno.h>
+#include <string.h>
 
 #include "../include/llist.h"
 
@@ -39,12 +40,14 @@ graph_t *graph_create(void) {
         return graph;
 }
 
-graph_t * get_set_graph_size(FILE *fp, graph_t *graph) {
+int get_set_graph_size(FILE *fp, graph_t *graph) {
+        int exit_status = 0;
         if (!graph) {
                 perror("get_graph_size: Error allocating memory\n");
                 errno = 0;
                 goto EXIT;
         }
+        const char *valid_chars = "@ >#+~";
         graph->cols = 0;
         graph->rows = 1;
         uint16_t cols = 0;
@@ -58,16 +61,21 @@ graph_t * get_set_graph_size(FILE *fp, graph_t *graph) {
                         graph->rows++;
                         continue;
                 }
+                if (!strchr(valid_chars, c)) {
+                        goto EXIT;
+                }
                 ++cols;
         }
         rewind(fp);
+        exit_status = 1;
 EXIT:
-        return graph;
+        return exit_status;
 }
 
 // TODO: Don't need to return the graph from these.
 
-graph_t *matrix_graph_create(FILE *fp, graph_t *graph) {
+int matrix_graph_create(FILE *fp, graph_t *graph) {
+        int exit_status = 0;
         graph->matrix = calloc(graph->rows, sizeof(vertex_t*));
         vertex_t  **matrix = calloc(graph->rows, sizeof(*matrix));
         graph->start = NULL;
@@ -95,17 +103,22 @@ graph_t *matrix_graph_create(FILE *fp, graph_t *graph) {
                         case '#':
                                 graph->matrix[row][col].value = WALL;
                                 break;
+                        case ' ':
+                                graph->matrix[row][col].value = SPACE;
+                                break;
                         case '\n':
                                 continue;
                                 // break;
                         default:
-                                // graph->matrix[row][col].letter = 28;
+                                goto EXIT;
                                 break;
                         }
                         graph->matrix[row][col].letter = letter;
                 }
         }
-        return graph;
+EXIT:
+        return exit_status;
+        // return graph;
 }
 
 void print_graph(graph_t *graph) {

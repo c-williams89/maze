@@ -19,7 +19,9 @@ int main (void) {
         }
 
         graph_t *graph = graph_create();
-        get_set_graph_size(fp, graph);
+        if (!get_set_graph_size(fp, graph)) {
+                return 1;
+        }
         matrix_graph_create(fp, graph);
         print_graph(graph);
         graph = matrix_enrich(graph);
