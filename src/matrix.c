@@ -50,7 +50,7 @@ int get_set_graph_size(FILE *fp, graph_t *graph) {
         const char *valid_chars = "@ >#+~";
         graph->cols = 0;
         graph->rows = 1;
-        uint16_t cols = 0;
+        uint16_t cols = 1;
         char c = '\0';
         while ((c = fgetc(fp)) != EOF) {
                 if ('\n' == c) {
@@ -72,22 +72,48 @@ EXIT:
         return exit_status;
 }
 
-// TODO: Don't need to return the graph from these.
-
 int matrix_graph_create(FILE *fp, graph_t *graph) {
         int exit_status = 0;
         graph->matrix = calloc(graph->rows, sizeof(vertex_t*));
         vertex_t  **matrix = calloc(graph->rows, sizeof(*matrix));
         graph->start = NULL;
         graph->end = NULL;
+
         char letter = '\0';
+        printf("Cols: %d\n", graph->cols);
 
         for (int row = 0; row < graph->rows; ++row) {
+                char *curr_line = calloc(graph->cols + 2, sizeof(char));
+                fgets(curr_line, graph->cols + 2, fp);
+                char *tmp;
+                if ((0 == row) || (row == (graph->rows -1))) {
+                        for (int i = 0; i < strlen(curr_line); ++i) {
+                                if (' ' == curr_line[i]) {
+                                        curr_line[i] = 26;
+                                }
+                        }
+                } 
+                size_t delim = 0;
+                delim = strcspn(curr_line, "#");
+                for (size_t i = 0; i < delim; ++i) {
+                        curr_line[i] = 26;
+                }
+                char *rear_delim = strrchr(curr_line, '#'); 
+                for (size_t i = strlen(curr_line) - 2; i > ((strlen(curr_line) - strlen(rear_delim))); --i) {
+                        curr_line[i] = 26;
+                }
+                int j = 0;
+
+                // printf("%s", curr_line);
                 graph->matrix[row] = calloc(graph->cols, sizeof(vertex_t));
                 // TODO: Added less than or equal to handle newline at end. Need a better way
                 //  of finding newline and null terminating instead.
-                for (int col = 0; col <= graph->cols; ++col) {
-                        letter = fgetc(fp);
+               
+                for (int col = 0; col < strlen(curr_line) - 1; ++col) { 
+                        //This should iterate only the available string
+                // for (int col = 0; col <= graph->cols; ++col) {
+                        letter = curr_line[col];
+                        // letter = fgetc(fp);
                         switch (letter)
                         {
                         case '@':
@@ -107,14 +133,16 @@ int matrix_graph_create(FILE *fp, graph_t *graph) {
                                 graph->matrix[row][col].value = SPACE;
                                 break;
                         case '\n':
-                                continue;
-                                // break;
+                                // continue;
+                                break;
+                        // case 10:
                         default:
-                                goto EXIT;
+                                // goto EXIT;
                                 break;
                         }
                         graph->matrix[row][col].letter = letter;
                 }
+               
         }
 EXIT:
         return exit_status;
@@ -131,7 +159,7 @@ void print_graph(graph_t *graph) {
         }
 }
 
-graph_t *matrix_enrich(graph_t *graph) {
+int matrix_enrich(graph_t *graph) {
         vertex_t *current = NULL;
         vertex_t *neighbor = NULL;
 
@@ -147,6 +175,10 @@ graph_t *matrix_enrich(graph_t *graph) {
                         
                                 if ((tgt_x > -1) && (tgt_x < graph->rows) && (tgt_y > -1) && (tgt_y < graph->cols)) {
                                         neighbor = &(graph->matrix[tgt_x][tgt_y]);
+                                        if ((neighbor->letter == 26) || (neighbor->letter == '\n')) {
+                                                printf("Invalid maze\n");
+                                                return 0;
+                                        }
                                         if (neighbor->value != WALL) {
                                                 matrix_add_edge(current, neighbor);
                                         }
@@ -156,7 +188,7 @@ graph_t *matrix_enrich(graph_t *graph) {
                         }        
                 }
         }
-        return graph;
+        return 1;
 }
 
 static void matrix_add_edge(vertex_t *current, vertex_t *neighbor) {
@@ -178,7 +210,7 @@ void bfs(graph_t *graph) {
                 if (!current) {
                         return;
                 }
-
+                // Noted: If neighbor == newline, it would be invalid
                 do {
                         if (!current->destination->level) {
                                 current->destination->level = level + 1;

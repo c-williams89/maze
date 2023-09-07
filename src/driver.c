@@ -22,11 +22,25 @@ int main (void) {
         if (!get_set_graph_size(fp, graph)) {
                 return 1;
         }
+        // printf("%c", 26);
+        while (!feof(fp)) {
+                char *curr_line = calloc(23, sizeof(char));
+                fgets(curr_line, 23, fp);
+                printf("%s", curr_line);
+
+        }
+        rewind(fp);
+        printf("\n");
         matrix_graph_create(fp, graph);
         print_graph(graph);
-        graph = matrix_enrich(graph);
+        if (!matrix_enrich(graph)) {
+                return 1;
+        }
         print_graph(graph);
         bfs(graph);
         print_solved(graph);
+        
+        
+        fclose(fp);
 
 }
