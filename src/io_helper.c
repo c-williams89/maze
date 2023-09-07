@@ -65,7 +65,7 @@ graph_data * get_graph_size(FILE *fp) {
                 }
                 ++cols;
         }
-        printf("Rows: %d\tCols: %d\n", graph->rows, graph->cols);
+        // printf("Rows: %d\tCols: %d\n", graph->rows, graph->cols);
 EXIT:
         return graph;
 }

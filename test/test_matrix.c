@@ -1,24 +1,26 @@
 #include <check.h>
 #include <stdio.h>
+#include <limits.h>
 
 #include "../include/matrix.h"
 
-	typedef struct vertex {
-        struct vertex *parent;
+typedef struct vertex_t {
+        struct vertex_t *parent;
         struct edge *neighbors;
         char value;
         int level;
         int num_children;
-	} vertex;
+} vertex_t;
 
-	typedef struct edge {
-        vertex *destination;
+typedef struct edge {
+        vertex_t *destination;
         struct edge *next;
-	} edge;
+} edge;
 
 START_TEST (test_matrix_create_valid) {
         FILE *fp = fopen("./data/valid_map.txt", "r");
-        vertex **matrix = matrix_create(fp, 83, 23);
+        vertex_t **matrix = matrix_create(fp, 83, 23);
+        // ck_assert_int_eq((matrix[1] + 11)->level, INT_MAX);
         ck_assert_ptr_ne(matrix, NULL);
 } END_TEST
 

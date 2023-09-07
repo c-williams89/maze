@@ -11,6 +11,9 @@ int main (void) {
         srunner_add_suite(sr, test_io_helper_suite);
         srunner_add_suite(sr, test_matrix_suite);
 
+#ifdef VALGRIND
+        srunner_set_fork_status(sr, CK_NOFORK);
+#endif
         srunner_run_all(sr, CK_VERBOSE);
         srunner_free(sr);
 }
