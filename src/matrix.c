@@ -7,16 +7,17 @@ enum { SPACE = 1, WALL = 11, WATER = 3 };
 
 typedef struct vertex_t {
         struct vertex_t *parent;
-        struct edge *neighbors;
+        struct edge_t *neighbors;
         char value;
         int level;
         int num_children;
 } vertex_t;
 
-typedef struct edge {
+typedef struct edge_t {
         vertex_t *destination;
-        struct edge *next;
-} edge;
+        struct edge_t *next;
+} edge_t;
+static void matrix_add_edge(vertex_t *current, vertex_t *neighbor);
 
 vertex_t **matrix_create(FILE *fp, uint16_t rows, uint16_t cols) {
         // TODO: Possible boolean to track valid/invalid map?
@@ -83,14 +84,22 @@ vertex_t **matrix_enrich(vertex_t **matrix, uint16_t rows, uint16_t cols) {
                         
                                 if ((tgt_x > -1) && (tgt_x < rows) && (tgt_y > -1) && (tgt_y < cols)) {
                                         neighbor = &(matrix[tgt_x][tgt_y]);
-                                        // if (neighbor->value < (current->value + 2)) {
-                                                // add_edge(current, neighbor);
-                                                current->num_children += 1;
-                                        // }
+                                        if (neighbor->value != 28) {
+                                                matrix_add_edge(current, neighbor);
+                                        }
+                                        current->num_children += 1;
                                 }
 
                         }        
                 }
         }
         return matrix;
+}
+
+static void matrix_add_edge(vertex_t *current, vertex_t *neighbor) {
+        edge_t *new_edge = calloc(1, sizeof(*new_edge));
+
+        new_edge->destination = neighbor;
+        new_edge->next = current->neighbors;
+        current->neighbors = new_edge;
 }

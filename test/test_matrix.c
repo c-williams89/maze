@@ -6,16 +6,16 @@
 
 typedef struct vertex_t {
         struct vertex_t *parent;
-        struct edge *neighbors;
+        struct edge_t *neighbors;
         char value;
         int level;
         int num_children;
 } vertex_t;
 
-typedef struct edge {
+typedef struct edge_t {
         vertex_t *destination;
-        struct edge *next;
-} edge;
+        struct edge_t *next;
+} edge_t;
 
 START_TEST (test_matrix_create_valid) {
         FILE *fp = fopen("./data/valid_map.txt", "r");
@@ -31,8 +31,9 @@ START_TEST (test_matrix_enrich_valid) {
         vertex_t **matrix = matrix_create(fp, rows, cols);
         matrix = matrix_enrich(matrix, rows, cols);
         ck_assert_int_eq(matrix[0][0].num_children, 2);
-        // ck_assert_int_ne(matrix[0][0].neighbors, NULL);
+        ck_assert_int_ne(matrix[0][0].neighbors, NULL);
 } END_TEST
+
 
 static TFun core_tests[] = {
         test_matrix_create_valid,
