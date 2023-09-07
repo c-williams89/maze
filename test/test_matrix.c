@@ -25,10 +25,13 @@ START_TEST (test_matrix_create_valid) {
 } END_TEST
 
 START_TEST (test_matrix_enrich_valid) {
+        uint16_t rows = 8;
+        uint16_t cols = 23;
         FILE *fp = fopen("./data/valid_map.txt", "r");
-        vertex_t **matrix = matrix_create(fp, 83, 23);
-        matrix = matrix_enrich(matrix);
-        // ck_assert_ptr_ne(matrix[0][0].neighbors, NULL);
+        vertex_t **matrix = matrix_create(fp, rows, cols);
+        matrix = matrix_enrich(matrix, rows, cols);
+        ck_assert_int_eq(matrix[0][0].num_children, 2);
+        // ck_assert_int_ne(matrix[0][0].neighbors, NULL);
 } END_TEST
 
 static TFun core_tests[] = {

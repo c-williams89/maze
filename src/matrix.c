@@ -48,6 +48,10 @@ vertex_t **matrix_create(FILE *fp, uint16_t rows, uint16_t cols) {
                         case '>':
                                 end = matrix[row] + col;
                                 break;
+                        case '#':
+                                matrix[row][col].value = WALL;
+                                break;
+                        // TODO: find empty spaces and set to ASCII dec 28
                         case '\n':
                                 continue;
                         // default:
@@ -55,7 +59,7 @@ vertex_t **matrix_create(FILE *fp, uint16_t rows, uint16_t cols) {
                                 // goto EXIT;
                         }
 
-                        matrix[row][col].value = 1;
+                        // matrix[row][col].value = 1;
                 }
         }
 
@@ -63,6 +67,30 @@ EXIT:
         return matrix;
 }
 
-vertex_t **matrix_enrich(vertex_t **matrix) {
-        return NULL;
+vertex_t **matrix_enrich(vertex_t **matrix, uint16_t rows, uint16_t cols) {
+        vertex_t *current = NULL;
+        vertex_t *neighbor = NULL;
+
+        int neighbor_x[] = {-1, 0, 1, 0};
+        int neighbor_y[] = {0, 1, 0, -1};
+
+        for (int row = 0; row < rows; ++row) {
+                for (int col = 0; col < cols; ++col) {
+                        current = &(matrix[row][col]);
+                        for (int i = 0; i < 4; ++i) {
+                                int tgt_x = row + neighbor_x[i];
+                                int tgt_y = col + neighbor_y[i];
+                        
+                                if ((tgt_x > -1) && (tgt_x < rows) && (tgt_y > -1) && (tgt_y < cols)) {
+                                        neighbor = &(matrix[tgt_x][tgt_y]);
+                                        // if (neighbor->value < (current->value + 2)) {
+                                                // add_edge(current, neighbor);
+                                                current->num_children += 1;
+                                        // }
+                                }
+
+                        }        
+                }
+        }
+        return matrix;
 }
