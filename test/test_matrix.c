@@ -24,8 +24,16 @@ START_TEST (test_matrix_create_valid) {
         ck_assert_ptr_ne(matrix, NULL);
 } END_TEST
 
+START_TEST (test_matrix_enrich_valid) {
+        FILE *fp = fopen("./data/valid_map.txt", "r");
+        vertex_t **matrix = matrix_create(fp, 83, 23);
+        matrix = matrix_enrich(matrix);
+        // ck_assert_ptr_ne(matrix[0][0].neighbors, NULL);
+} END_TEST
+
 static TFun core_tests[] = {
         test_matrix_create_valid,
+        test_matrix_enrich_valid,
         NULL
 };
 
