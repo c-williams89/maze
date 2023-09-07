@@ -10,6 +10,7 @@
 	graph_t *matrix_enrich(graph_t *graph);
 	void print_graph(graph_t *graph);
 	void bfs(graph_t *graph);
+	void print_solved(graph_t *graph);
 #endif
 
 

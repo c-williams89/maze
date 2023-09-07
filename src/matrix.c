@@ -186,42 +186,20 @@ void bfs(graph_t *graph) {
                 node = node->parent;
                 ++counter;
         }
+        graph->end->letter = '>';
+
 }
 
-/*
 
-static void bfs(vertex_t **matrix, vertex_t *start, vertex_t *end) {
-        llist_t *queue = llist_create();
-        llist_enqueue(queue, start);
-        // TODO: For Djikstras, priority queue must be implemented here
-        int level = 0;
-        while(!llist_is_empty(queue)) {
-                vertex_t *node = (vertex_t *)llist_dequeue(queue);          
-                edge_t *current = node->neighbors;
-                if (!current) {
-                        return;
-                }
-
-                do {
-                        if (!current->destination->level) {
-                                current->destination->level = level + 1;
-                                current->destination->parent = node;
-                                llist_enqueue(queue, current->destination);
+void print_solved(graph_t *graph) {
+        for (int i = 0; i < graph->rows; ++i) {
+                for (int j = 0; j < graph->cols; ++j) {
+                         if (graph->matrix[i][j].letter == '.') {
+                                printf("\033[1;31m%c\033[0m", graph->matrix[i][j].letter);
+                        } else {
+                                printf("%c", graph->matrix[i][j].letter);
                         }
-                        current = current->next;
-                } while (current); 
-                level += 1;
+                }
+                printf("\n");
         }
-
-        llist_t *stack = llist_create();
-        vertex_t *node = end;
-        int counter = 0;
-        while (node != node->parent) {
-                node->value = '+';
-                llist_push(stack, node);
-                node = node->parent;
-                ++counter;
-        }
-        printf("From end to start: %d\n", counter);
-} 
-*/
+}
