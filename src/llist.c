@@ -5,7 +5,7 @@
 // typef struct vertex_t vertex_t;
 struct node_t {
 	struct node_t *next;
-	void *data; //*data is of type vertex_t
+	void *data;		//*data is of type vertex_t
 };
 
 struct llist_t {
@@ -26,6 +26,7 @@ llist_t *llist_create()
 
 	return llist;
 }
+
 /*
 // void llist_delete(llist_t ** p_llist)
 // {
@@ -60,7 +61,7 @@ llist_t *llist_create()
 // }			
 */
 
-bool llist_enqueue(llist_t * llist, void * data)
+bool llist_enqueue(llist_t * llist, void *data)
 {
 	if (!llist || !data) {
 		return false;
@@ -85,6 +86,7 @@ bool llist_enqueue(llist_t * llist, void * data)
 
 	return true;
 }
+
 /*
 // bool llist_dequeue(llist_t * llist, vertex ** data)
 // {
@@ -139,7 +141,7 @@ void *llist_dequeue(llist_t * list)
 	return data;
 }
 
-bool llist_push(llist_t * llist, void * data)
+bool llist_push(llist_t * llist, void *data)
 {
 	if (!llist || !data) {
 		return false;
@@ -156,7 +158,8 @@ bool llist_push(llist_t * llist, void * data)
 	++llist->sz;
 
 	return true;
-}			 
+}
+
 /*
 
 // inline bool llist_pop(llist_t * llist, vertex ** data)
@@ -172,6 +175,7 @@ bool llist_is_empty(llist_t * llist)
 	}
 	return llist->sz > 0 ? false : true;
 }
+
 /*				llist_is_empty()
 uint64_t llist_get_size(llist_t * llist)
 {
@@ -197,21 +201,23 @@ void llist_purge(llist_t * llist)
 	llist->head = NULL;
 	llist->tail = NULL;
 }				llist_purge()
-
-// vertex_t *llist_find(llist_t * llist, const char *id)
-// {
-// 	vertex_t *data = NULL;
-// 	struct node_t *node = llist->head;
-// 	while (node) {
-// 		if (is_match(node->data, id)) {
-// 			data = node->data;
-// 			break;
-// 		}
-// 		node = node->next;
-// 	}
-// 	return data;
-// }
-
+*/
+/*
+vertex_t *llist_find(llist_t * llist, const char *id)
+{
+	vertex_t *data = NULL;
+	struct node_t *node = llist->head;
+	while (node) {
+		if (is_match(node->data, id)) {
+			data = node->data;
+			break;
+		}
+		node = node->next;
+	}
+	return data;
+}
+*/
+/*
 // void llist_print(llist_t * llist, int depth)
 // {
 // 	if (!llist) {
