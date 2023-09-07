@@ -62,3 +62,7 @@ vertex_t **matrix_create(FILE *fp, uint16_t rows, uint16_t cols) {
 EXIT:
         return matrix;
 }
+
+vertex_t **matrix_enrich(vertex_t **matrix) {
+        return NULL;
+}
