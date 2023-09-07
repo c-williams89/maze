@@ -32,7 +32,7 @@ typedef struct graph_t {
 } graph_t;
 
 static void matrix_add_edge(vertex_t * current, vertex_t * neighbor);
-void bfs(graph_t * graph);
+// void bfs(graph_t * graph);
 
 graph_t *graph_create(void)
 {
@@ -217,7 +217,7 @@ static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 	current->neighbors = new_edge;
 }
 
-void bfs(graph_t * graph)
+int bfs(graph_t * graph)
 {
 	llist_t *queue = llist_create();
 	llist_enqueue(queue, graph->start);
@@ -246,12 +246,17 @@ void bfs(graph_t * graph)
 	while (node != node->parent) {
 		node->letter = '.';
 		llist_push(stack, node);
+                if (!node->parent) {
+                        return 0;
+                }
 		node = node->parent;
 		++counter;
 	}
 	graph->end->letter = '>';
+        return 1;
 
 }
+// TODO: Possibly put validation in it's own function so that we can still print original maze
 
 void print_solved(graph_t * graph)
 {

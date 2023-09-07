@@ -34,13 +34,17 @@ int main(void)
                 printf("broke on create\n");
 		return 1;
 	}
-	print_graph(graph);
 	if (!matrix_enrich(graph)) {
                 printf("broke on enrich");
 		return 1;
 	}
 	print_graph(graph);
-	bfs(graph);
+	// print_graph(graph);
+	
+        if (!bfs(graph)) {
+                printf("Broken in bfs");
+                return 1;
+        }
 	print_solved(graph);
 
 	fclose(fp);

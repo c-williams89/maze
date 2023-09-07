@@ -201,21 +201,23 @@ void llist_purge(llist_t * llist)
 	llist->head = NULL;
 	llist->tail = NULL;
 }				llist_purge()
-
-// vertex_t *llist_find(llist_t * llist, const char *id)
-// {
-// 	vertex_t *data = NULL;
-// 	struct node_t *node = llist->head;
-// 	while (node) {
-// 		if (is_match(node->data, id)) {
-// 			data = node->data;
-// 			break;
-// 		}
-// 		node = node->next;
-// 	}
-// 	return data;
-// }
-
+*/
+/*
+vertex_t *llist_find(llist_t * llist, const char *id)
+{
+	vertex_t *data = NULL;
+	struct node_t *node = llist->head;
+	while (node) {
+		if (is_match(node->data, id)) {
+			data = node->data;
+			break;
+		}
+		node = node->next;
+	}
+	return data;
+}
+*/
+/*
 // void llist_print(llist_t * llist, int depth)
 // {
 // 	if (!llist) {
