@@ -65,6 +65,7 @@ EXIT:
         return graph;
 }
 
+// TODO: Don't need to return the graph from these.
 
 graph_t *matrix_graph_create(FILE *fp, graph_t *graph) {
         graph->matrix = calloc(graph->rows, sizeof(vertex_t*));
@@ -114,6 +115,34 @@ void print_graph(graph_t *graph) {
                 }
                 printf("\n");
         }
+}
+
+graph_t *matrix_enrich(graph_t *graph) {
+        vertex_t *current = NULL;
+        vertex_t *neighbor = NULL;
+
+        int neighbor_x[] = {-1, 0, 1, 0};
+        int neighbor_y[] = {0, 1, 0, -1};
+
+        for (int row = 0; row < graph->rows; ++row) {
+                for (int col = 0; col < graph->cols; ++col) {
+                        current = &(graph->matrix[row][col]);
+                        for (int i = 0; i < 4; ++i) {
+                                int tgt_x = row + neighbor_x[i];
+                                int tgt_y = col + neighbor_y[i];
+                        
+                                if ((tgt_x > -1) && (tgt_x < graph->rows) && (tgt_y > -1) && (tgt_y < graph->cols)) {
+                                        neighbor = &(graph->matrix[tgt_x][tgt_y]);
+                                        if (neighbor->value != 28) {
+                                                // matrix_add_edge(current, neighbor);
+                                        }
+                                        current->num_children += 1;
+                                }
+
+                        }        
+                }
+        }
+        return graph;
 }
 
 /*
