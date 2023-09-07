@@ -31,10 +31,12 @@ int main(void)
 
 	// rewind(fp);
 	if (!matrix_graph_create(fp, graph)) {
+                printf("broke on create\n");
 		return 1;
 	}
 	print_graph(graph);
 	if (!matrix_enrich(graph)) {
+                printf("broke on enrich");
 		return 1;
 	}
 	print_graph(graph);

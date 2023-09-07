@@ -141,8 +141,10 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 			}
 			graph->matrix[row][col].letter = letter;
 		}
-
 	}
+        if (!graph->start || !graph->end) {
+                goto EXIT;
+        }
 	exit_status = 1;
  EXIT:
 	return exit_status;
