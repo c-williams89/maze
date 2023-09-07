@@ -38,7 +38,7 @@ llist_t *llist_create();
  * @return true On success
  * @return false On failure
  */
-bool llist_enqueue(llist_t *llist, void *data);
+bool llist_enqueue(llist_t * llist, void *data);
 
 /**
  * @brief Removes void* from linked-list as a queue
@@ -48,7 +48,7 @@ bool llist_enqueue(llist_t *llist, void *data);
  * @return true On success
  * @return false On failure
  */
-void *llist_dequeue(llist_t *llist);
+void *llist_dequeue(llist_t * llist);
 
 /**
  * @brief Adds void* to linked-list as a stack
@@ -58,7 +58,7 @@ void *llist_dequeue(llist_t *llist);
  * @return true On success
  * @return false On failure
  */
-bool llist_push(llist_t *llist, void *data);
+bool llist_push(llist_t * llist, void *data);
 
 /**
  * @brief Removes void* from linked-list as a stack
@@ -77,7 +77,7 @@ bool llist_push(llist_t *llist, void *data);
  * @return true Is empty
  * @return false Not empty
  */
-bool llist_is_empty(llist_t *llist);
+bool llist_is_empty(llist_t * llist);
 
 // Emptys linked list without doing anything to stored pointers
 //
@@ -91,6 +91,6 @@ bool llist_is_empty(llist_t *llist);
 
 // llist_t *llist_duplicate(llist_t *llist);
 
-#endif /* LLIST_H */
+#endif				/* LLIST_H */
 
 /*** end of file ***/
