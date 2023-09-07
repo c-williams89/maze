@@ -32,7 +32,7 @@ typedef struct graph_t {
 } graph_t;
 
 static void matrix_add_edge(vertex_t *current, vertex_t *neighbor);
-static void bfs(vertex_t **matrix, vertex_t *start, vertex_t *end);
+void bfs(graph_t *graph);
 
 graph_t *graph_create(void) {
         graph_t *graph = calloc(1, sizeof(*graph));
@@ -86,6 +86,7 @@ graph_t *matrix_graph_create(FILE *fp, graph_t *graph) {
                                 graph->start = graph->matrix[row] + col;
                                 graph->start->level = INT_MAX;
                                 graph->start->value = START;
+                                graph->start->parent = graph->start;
                                 break;
                         case '>':
                                 graph->end = graph->matrix[row] + col;
@@ -133,8 +134,8 @@ graph_t *matrix_enrich(graph_t *graph) {
                         
                                 if ((tgt_x > -1) && (tgt_x < graph->rows) && (tgt_y > -1) && (tgt_y < graph->cols)) {
                                         neighbor = &(graph->matrix[tgt_x][tgt_y]);
-                                        if (neighbor->value != 28) {
-                                                // matrix_add_edge(current, neighbor);
+                                        if (neighbor->value != WALL) {
+                                                matrix_add_edge(current, neighbor);
                                         }
                                         current->num_children += 1;
                                 }
@@ -145,36 +146,6 @@ graph_t *matrix_enrich(graph_t *graph) {
         return graph;
 }
 
-/*
-// NOTE: This function could probably be static as well.
-vertex_t **matrix_enrich(vertex_t **matrix, uint16_t rows, uint16_t cols) {
-        vertex_t *current = NULL;
-        vertex_t *neighbor = NULL;
-
-        int neighbor_x[] = {-1, 0, 1, 0};
-        int neighbor_y[] = {0, 1, 0, -1};
-
-        for (int row = 0; row < rows; ++row) {
-                for (int col = 0; col < cols; ++col) {
-                        current = &(matrix[row][col]);
-                        for (int i = 0; i < 4; ++i) {
-                                int tgt_x = row + neighbor_x[i];
-                                int tgt_y = col + neighbor_y[i];
-                        
-                                if ((tgt_x > -1) && (tgt_x < rows) && (tgt_y > -1) && (tgt_y < cols)) {
-                                        neighbor = &(matrix[tgt_x][tgt_y]);
-                                        if (neighbor->value != 28) {
-                                                matrix_add_edge(current, neighbor);
-                                        }
-                                        current->num_children += 1;
-                                }
-
-                        }        
-                }
-        }
-        return matrix;
-}
-
 static void matrix_add_edge(vertex_t *current, vertex_t *neighbor) {
         edge_t *new_edge = calloc(1, sizeof(*new_edge));
 
@@ -182,6 +153,42 @@ static void matrix_add_edge(vertex_t *current, vertex_t *neighbor) {
         new_edge->next = current->neighbors;
         current->neighbors = new_edge;
 }
+
+void bfs(graph_t *graph) {
+        llist_t *queue = llist_create();
+        llist_enqueue(queue, graph->start);
+        uint16_t level = 0;
+
+        while (!llist_is_empty(queue)) {
+                vertex_t *node = (vertex_t *)llist_dequeue(queue);
+                edge_t *current = node->neighbors;
+                if (!current) {
+                        return;
+                }
+
+                do {
+                        if (!current->destination->level) {
+                                current->destination->level = level + 1;
+                                current->destination->parent = node;
+                                llist_enqueue(queue, current->destination);
+                        }
+                        current = current->next;
+                } while (current);
+                level += 1;
+        }
+
+        llist_t *stack = llist_create();
+        vertex_t *node = graph->end;
+        int counter = 0;
+        while (node != node->parent) {
+                node->letter = '.';
+                llist_push(stack, node);
+                node = node->parent;
+                ++counter;
+        }
+}
+
+/*
 
 static void bfs(vertex_t **matrix, vertex_t *start, vertex_t *end) {
         llist_t *queue = llist_create();

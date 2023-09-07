@@ -24,5 +24,6 @@ int main (void) {
         print_graph(graph);
         graph = matrix_enrich(graph);
         print_graph(graph);
+        bfs(graph);
 
 }

@@ -9,6 +9,7 @@
 	graph_t *matrix_graph_create(FILE *fp, graph_t *graph);
 	graph_t *matrix_enrich(graph_t *graph);
 	void print_graph(graph_t *graph);
+	void bfs(graph_t *graph);
 #endif
 
 
