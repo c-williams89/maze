@@ -5,7 +5,7 @@
 
 #include "../include/llist.h"
 
-enum { SPACE = 1, WALL = 11, WATER = 3 };
+enum { SPACE = 1, WALL = 11, WATER = 3, END = 1, START = 0 };
 
 typedef struct vertex_t {
         struct vertex_t *parent;
@@ -49,9 +49,11 @@ vertex_t **matrix_create(FILE *fp, uint16_t rows, uint16_t cols) {
                                 // (matrix[row] + col)->level = INT_MAX;
                                 start = matrix[row] + col;
                                 start->level = INT_MAX;
+                                start->value = START;
                                 break;                        
                         case '>':
                                 end = matrix[row] + col;
+                                end->value = END;
                                 break;
                         case '#':
                                 matrix[row][col].value = WALL;
@@ -112,6 +114,7 @@ static void matrix_add_edge(vertex_t *current, vertex_t *neighbor) {
 static void bfs(vertex_t **matrix, vertex_t *start, vertex_t *end) {
         llist_t *queue = llist_create();
         llist_enqueue(queue, start);
+        // TODO: For Djikstras, priority queue must be implemented here
         int level = 0;
         while(!llist_is_empty(queue)) {
                 vertex_t *node = (vertex_t *)llist_dequeue(queue);          
@@ -128,7 +131,6 @@ static void bfs(vertex_t **matrix, vertex_t *start, vertex_t *end) {
                         }
                         current = current->next;
                 } while (current); 
-
                 level += 1;
         }
 
