@@ -43,29 +43,29 @@ EXIT:
 // TODO: Build a struct for map information, rows, columns, start, and end to pass that 
 //  struct around where needed
 // NOTE: Consider moving to the matrix helper source
-graph_data * get_graph_size(FILE *fp) {
-        graph_data *graph = calloc(1, sizeof(*graph));
-        if (!graph) {
-                perror("get_graph_size: Error allocating memory\n");
-                errno = 0;
-                goto EXIT;
-        }
-        graph->cols = 0;
-        graph->rows = 1;
-        uint16_t cols = 0;
-        char c = '\0';
-        while ((c = fgetc(fp)) != EOF) {
-                if ('\n' == c) {
-                        if (cols > graph->cols) {
-                                graph->cols = cols;
-                        }
-                        cols = 0;
-                        graph->rows++;
-                        continue;
-                }
-                ++cols;
-        }
-        // printf("Rows: %d\tCols: %d\n", graph->rows, graph->cols);
-EXIT:
-        return graph;
-}
+// graph_data * get_set_graph_size(FILE *fp) {
+//         graph_data *graph = calloc(1, sizeof(*graph));
+//         if (!graph) {
+//                 perror("get_graph_size: Error allocating memory\n");
+//                 errno = 0;
+//                 goto EXIT;
+//         }
+//         graph->cols = 0;
+//         graph->rows = 1;
+//         uint16_t cols = 0;
+//         char c = '\0';
+//         while ((c = fgetc(fp)) != EOF) {
+//                 if ('\n' == c) {
+//                         if (cols > graph->cols) {
+//                                 graph->cols = cols;
+//                         }
+//                         cols = 0;
+//                         graph->rows++;
+//                         continue;
+//                 }
+//                 ++cols;
+//         }
+//         // printf("Rows: %d\tCols: %d\n", graph->rows, graph->cols);
+// EXIT:
+//         return graph;
+// }
