@@ -32,7 +32,6 @@ typedef struct graph_t {
 } graph_t;
 
 static void matrix_add_edge(vertex_t * current, vertex_t * neighbor);
-// void bfs(graph_t * graph);
 
 graph_t *graph_create(void)
 {
