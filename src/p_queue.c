@@ -6,7 +6,8 @@
 #include "../include/p_queue.h"
 
 typedef struct node_t {
-        int data;
+        // int data;
+        void * data;
         int priority;
         int level;
 
@@ -18,6 +19,8 @@ struct pqueue_t {
         uint32_t count;
         int capacity;
 };
+
+// TODO: Write custom function to compare value within vertex_t struct
 
 static void heapify_up(uint32_t position, node_t *heap);
 static void heapify_down(uint32_t position, uint64_t size, node_t *heap);
@@ -52,7 +55,7 @@ CREATE_EXIT:
         return pq;
 }
 
-bool pqueue_insert(pqueue_t *pqueue, int key, int data) {
+bool pqueue_insert(pqueue_t *pqueue, int key, void * data) {
         
         bool return_status = false;
         if (!pqueue) {
@@ -97,13 +100,13 @@ static void heapify_up(uint32_t position, node_t *heap) {
         }
 }
 
-int pqueue_pull(pqueue_t *pqueue) {
+void * pqueue_pull(pqueue_t *pqueue) {
         
         if (!pqueue || !pqueue->heap) {
                 fprintf(stderr, "pqueue_pull: Invalid argument - NULL\n");
                 return -1;
         }
-        int temp;
+        void * temp;
         if (!pqueue->count) {
                 fprintf(stderr, "pqueue_pull: Queue is empty\n");
                 return -1;
@@ -140,4 +143,8 @@ void pq_print(pqueue_t *pq) {
         for (int i = 0; i < pq->count; ++i) {
                 printf("%d: %d\n", i, pq->heap[i].data);
         }
+}
+
+bool pqueue_is_empty(pqueue_t *pqueue) {
+        return (0 == pqueue->count) ? true : false;
 }

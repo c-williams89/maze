@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "../include/llist.h"
+#include "../include/p_queue.h"
 
 enum { SPACE = 1, WALL = 11, WATER = 3, END = 1, START = 0, DOOR = 3 };
 
@@ -29,6 +30,7 @@ typedef struct graph_t {
 	vertex_t *end;
 	uint16_t rows;
 	uint16_t cols;
+        uint16_t size;
 } graph_t;
 
 static void matrix_add_edge(vertex_t * current, vertex_t * neighbor);
@@ -116,21 +118,31 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 				graph->start->level = INT_MAX;
 				graph->start->value = START;
 				graph->start->parent = graph->start;
+                                graph->size += 1;
+
 				break;
 			case '>':
 				if (graph->end) {
 					goto EXIT;
 				}
+                                graph->size += 1;
+
 				graph->end = graph->matrix[row] + col;
 				graph->end->value = END;
 				break;
 			case '#':
+                                graph->size += 1;
+
 				graph->matrix[row][col].value = WALL;
 				break;
 			case ' ':
+                                graph->size += 1;
+
 				graph->matrix[row][col].value = SPACE;
 				break;
 			case '+':
+                                graph->size += 1;
+
 				graph->matrix[row][col].value = DOOR;
 				break;
 			case '\n':
@@ -139,6 +151,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 				break;
 			}
 			graph->matrix[row][col].letter = letter;
+                        // graph->size += 1;
 		}
 	}
         if (!graph->start || !graph->end) {
@@ -218,6 +231,31 @@ static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 
 int bfs(graph_t * graph)
 {
+        pqueue_t *pqueue = pqueue_create(graph->size);
+        pqueue_insert(pqueue, graph->start->value, graph->start);
+        uint16_t level = 0;
+        printf("Graph size: %d\n", graph->size);
+        while (!pqueue_is_empty(pqueue)) {
+                vertex_t *node = (vertex_t *)pqueue_pull(pqueue);
+                edge_t *current = node->neighbors;
+                if (!current) {
+                        return;
+                }
+
+                do {
+                        if (!current->destination->level) {
+                                current->destination->level = level + 1;
+                                current->destination->parent = node;
+                                pqueue_insert(pqueue, current->destination->value, current->destination);
+                        }
+                        current = current->next;
+                } while (current);
+
+                level += 1;
+        }
+
+        // NOTE: Everything below works
+        /*
 	llist_t *queue = llist_create();
 	llist_enqueue(queue, graph->start);
 	uint16_t level = 0;
@@ -253,6 +291,7 @@ int bfs(graph_t * graph)
 	}
 	graph->end->letter = '>';
         return 1;
+        */
 
 }
 // TODO: Possibly put validation in it's own function so that we can still print original maze
