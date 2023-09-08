@@ -51,10 +51,15 @@ int main(void)
 	print_graph(graph);
 	// print_graph(graph);
 	
-        if (!bfs(graph)) {
-                printf("Broken in bfs");
+        if (!matrix_validate_maze(graph)) {
+                printf("Not a valid maze validate\n");
                 return 1;
         }
+
+        // if (!bfs(graph)) {
+        //         printf("Broken in bfs");
+        //         return 1;
+        // }
 	print_solved(graph);
 
 	fclose(fp);

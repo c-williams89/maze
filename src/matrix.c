@@ -132,11 +132,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 			        	break;
 			        case ' ':
                                         graph->size += 1;
-
-			        	graph->matrix[row][col].value = SPACE;
-			        	break;
-			        case '+':
-                                        graph->size += 1;
+                                        // graph->size += 1;
 
 			        	graph->matrix[row][col].value = DOOR;
 			        	break;
@@ -261,33 +257,37 @@ int matrix_enrich(graph_t * graph)
 	int neighbor_x[] = { -1, 0, 1, 0 };
 	int neighbor_y[] = { 0, 1, 0, -1 };
 
-	for (int row = 1; row < graph->rows + 2; ++row) {
-		for (int col = 1; col < graph->cols + 2; ++col) {
+	for (int row = 0; row < graph->rows + 2; ++row) {
+		for (int col = 0; col < graph->cols + 2; ++col) {
 			current = &(graph->matrix[row][col]);
 			if (current->letter == ' ' || current->letter == '>'
-			    || current->letter == '@') {
+			    || current->letter == '@' || current->letter == 'a') {
 				for (int i = 0; i < 4; ++i) {
 					int tgt_x = row + neighbor_x[i];
 					int tgt_y = col + neighbor_y[i];
 
 					if ((tgt_x > -1)
-					    && (tgt_x < graph->rows)
+					    && (tgt_x < graph->rows + 2)
 					    && (tgt_y > -1)
-					    && (tgt_y < graph->cols)) {
+					    && (tgt_y < graph->cols + 2)) {
 						neighbor =
 						    &(graph->
 						      matrix[tgt_x][tgt_y]);
-						if ((neighbor->letter == 26)
-						    || (neighbor->letter ==
-							'\n')) {
-							printf
-							    ("Invalid maze\n");
-							printf
-							    ("Broken on %d:%d\n",
-							     row, col);
-							return 0;
-						}
+						// if ((neighbor->letter == 26)
+						//     || (neighbor->letter ==
+						// 	'\n')) {
+						// 	printf
+						// 	    ("Invalid maze\n");
+						// 	printf
+						// 	    ("Broken on %d:%d\n",
+						// 	     row, col);
+						// 	return 0;
+						// }
 						if (neighbor->value != WALL) {
+                                                        if(neighbor->letter == '@') {
+                                                                printf("%c found\n", current->letter);
+                                                        }
+                                                        // current->letter = 'A';
 							matrix_add_edge(current,
 									neighbor);
 						}
@@ -351,6 +351,7 @@ int bfs(graph_t * graph)
 			return;
 		}
 		do {
+
 			if (!current->destination->level) {
 				current->destination->level = level + 1;
 				current->destination->parent = node;
@@ -384,20 +385,44 @@ void print_solved(graph_t * graph)
 {
         for (int row = 1; row < graph->rows + 1; ++row) {
 		for (int col = 1; col < graph->cols + 1; ++col) {
-                        // if (graph->matrix[row][col].letter == '.')
 			printf("%c", graph->matrix[row][col].letter);
 		}
 		printf("\n");
 	}
-	// for (int i = 0; i < graph->rows; ++i) {
-	// 	for (int j = 0; j < graph->cols; ++j) {
-	// 		if (graph->matrix[i][j].letter == '.') {
-	// 			printf("\033[1;31m%c\033[0m",
-	// 			       graph->matrix[i][j].letter);
-	// 		} else {
-	// 			printf("%c", graph->matrix[i][j].letter);
-	// 		}
-	// 	}
-	// 	printf("\n");
-	// }
+}
+
+bool matrix_validate_maze(graph_t *graph) {
+        llist_t *queue = llist_create();
+        vertex_t *node = &(graph)->matrix[0][0];
+        llist_enqueue(queue, node);
+        uint16_t level = 0;
+        
+        while (!llist_is_empty(queue)) {
+                vertex_t *next = (vertex_t *)llist_dequeue(queue);
+                if (next->letter == '@' || next->letter == '>') {
+                        return false;
+                }
+
+                edge_t *current = next->neighbors;
+                if (!current) {
+                        return false;
+                }
+                while (current) {
+                        // if (current->destination->letter == '@') {
+                        //         printf("value: %d\n", current->destination->level);
+                        //         if (current->destination->level) {
+                        //                 printf("trueee\n");
+                        //         }
+                        // }
+                        if (!current->destination->level || current->destination->letter == '@') {
+                                // printf("%c Added to queue\n", current->destination->letter);
+                                current->destination->level = level + 1;
+                                current->destination->parent = next;
+                                llist_enqueue(queue, current->destination);
+                        }
+                        current = current->next;
+                }
+                level += 1;
+        }
+        return true;
 }
