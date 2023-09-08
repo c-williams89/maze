@@ -52,7 +52,7 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 	const char *valid_chars = "@ >#+~";
 	graph->cols = 0;
 	graph->rows = 1;
-	uint16_t cols = 1;
+	uint16_t cols = 0;
 	char c = '\0';
 	while ((c = fgetc(fp)) != EOF) {
 		if ('\n' == c) {
@@ -76,13 +76,86 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 
 int matrix_graph_create(FILE * fp, graph_t * graph)
 {
+        printf("Rows: %d, cols: %d\n", graph->rows, graph->cols);
 	int exit_status = 0;
-	graph->matrix = calloc(graph->rows, sizeof(vertex_t *));
-	vertex_t **matrix = calloc(graph->rows, sizeof(*matrix));
+	graph->matrix = calloc(graph->rows + 2, sizeof(vertex_t *));
+	vertex_t **matrix = calloc(graph->rows + 2, sizeof(*matrix));
+        // for (int col = 0; col < graph->cols)
 	graph->start = NULL;
 	graph->end = NULL;
+        char letter = '\0';
+        
+        for (int row = 0; row < graph->rows + 2; ++row) {
+                graph->matrix[row] = calloc(graph->cols + 2, sizeof(vertex_t));
+                if (!graph->matrix[row]) {
+                        printf("This failed\n");
+                }
+                graph->matrix[row][0].letter = 'a';
+                graph->matrix[row][graph->cols + 1].letter = 'a';
 
-	char letter = '\0';
+                if ((0 == row) || (row == (graph->rows + 1))) {
+                        for (int col = 0; col < graph->cols + 1; ++col) {
+                                graph->matrix[row][col].letter = 'a';
+                                graph->matrix[row][col].value = INT_MIN;
+                        }
+                } else {
+                        for (int col = 1; col < graph->cols + 2; ++col) {
+                                letter = fgetc(fp);
+                                if (letter == '\n' || letter == EOF) {
+                                        break;
+                                }
+                                switch (letter)
+                                {
+                                case '@':
+				        if (graph->start) {
+				        	goto EXIT;
+				        }
+				        graph->start = graph->matrix[row] + col;
+				        graph->start->level = INT_MAX;
+				        graph->start->value = START;
+				        graph->start->parent = graph->start;
+                                        graph->size += 1;
+				        break;
+			        case '>':
+			        	if (graph->end) {
+			        		goto EXIT;
+			        	}
+                                        graph->size += 1;
+
+			        	graph->end = graph->matrix[row] + col;
+			        	graph->end->value = END;
+			        	break;
+			        case '#':
+                                        graph->size += 1;
+
+			        	graph->matrix[row][col].value = WALL;
+			        	break;
+			        case ' ':
+                                        graph->size += 1;
+
+			        	graph->matrix[row][col].value = SPACE;
+			        	break;
+			        case '+':
+                                        graph->size += 1;
+
+			        	graph->matrix[row][col].value = DOOR;
+			        	break;
+			        // case '\n':
+                                //         continue;
+			        	// break;
+                                }
+                                graph->matrix[row][col].letter = letter;
+                        }
+                }
+        }
+        if (!graph->start || !graph->end) {
+                goto EXIT;
+        }
+
+	// NOTE: The below works with assigning random ascii character to find holes in wall
+        // Working a new angle with artifical border around entire map.
+        /*
+        char letter = '\0';
 
 	for (int row = 0; row < graph->rows; ++row) {
 		char *curr_line = calloc(graph->cols + 2, sizeof(char));
@@ -156,7 +229,8 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 	}
         if (!graph->start || !graph->end) {
                 goto EXIT;
-        }
+        */
+        // }
 	exit_status = 1;
  EXIT:
 	return exit_status;
@@ -164,12 +238,19 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 
 void print_graph(graph_t * graph)
 {
-	for (int row = 0; row < graph->rows; ++row) {
-		for (int col = 0; col < graph->cols; ++col) {
+	for (int row = 1; row < graph->rows + 1; ++row) {
+		for (int col = 1; col < graph->cols + 1; ++col) {
 			printf("%c", graph->matrix[row][col].letter);
 		}
 		printf("\n");
 	}
+        printf("\n\n");
+        for (int row = 0; row < graph->rows + 2; ++row) {
+                for (int col = 0; col < graph->cols + 2; ++col) {
+			printf("%c", graph->matrix[row][col].letter);
+                }
+                printf("\n");
+        }
 }
 
 int matrix_enrich(graph_t * graph)
@@ -180,8 +261,8 @@ int matrix_enrich(graph_t * graph)
 	int neighbor_x[] = { -1, 0, 1, 0 };
 	int neighbor_y[] = { 0, 1, 0, -1 };
 
-	for (int row = 0; row < graph->rows; ++row) {
-		for (int col = 0; col < graph->cols; ++col) {
+	for (int row = 1; row < graph->rows + 2; ++row) {
+		for (int col = 1; col < graph->cols + 2; ++col) {
 			current = &(graph->matrix[row][col]);
 			if (current->letter == ' ' || current->letter == '>'
 			    || current->letter == '@') {
@@ -231,6 +312,8 @@ static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 
 int bfs(graph_t * graph)
 {
+        // TODO: Come back to this after confirming new validation works
+        /*
         pqueue_t *pqueue = pqueue_create(graph->size);
         pqueue_insert(pqueue, graph->start->value, graph->start);
         uint16_t level = 0;
@@ -253,9 +336,10 @@ int bfs(graph_t * graph)
 
                 level += 1;
         }
+        */
 
         // NOTE: Everything below works
-        /*
+        
 	llist_t *queue = llist_create();
 	llist_enqueue(queue, graph->start);
 	uint16_t level = 0;
@@ -291,7 +375,7 @@ int bfs(graph_t * graph)
 	}
 	graph->end->letter = '>';
         return 1;
-        */
+        
 
 }
 // TODO: Possibly put validation in it's own function so that we can still print original maze
