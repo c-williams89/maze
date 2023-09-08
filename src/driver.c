@@ -39,7 +39,31 @@ int main(int argc, char *argv[])
                 fclose(fp);
                 goto EXIT;
         }
+        
+        int opt;
+        // NOTE: getopt return values:
+        //  -1: All options have been parsed
+        //  '?': Option not in the optstring (invalid)
+        //  ':': Option is missing argument
+        while ((opt = getopt(argc, argv, "dDw")) != -1) {
+                switch (opt)
+                {
+                case 'd':
+                        break;
+                case 'D':
+                        break;
+                case 'w':
+                        break;
+                case '?':
+                        // fprintf(stderr, "maze: invalid option: '-%c'\n", opt);
+                        goto EXIT;
+                        break;
+                default:
+                        break;
+                }
+        }
 
+        // TODO: Optargs need to be handled before calling any of these functions
 	graph_t *graph = graph_create();
 	if (!get_set_graph_size(fp, graph)) {
 		return 1;
