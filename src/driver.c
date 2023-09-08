@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <getopt.h>
+#include <string.h>
 
 #include "../include/io_helper.h"
 #include "../include/matrix.h"
@@ -15,31 +17,34 @@
 // [ ] create a directory of multiple map .txt files to run against the project
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-	FILE *fp = fopen("./data/valid_map.txt", "r");
-	if (!fp) {
-		perror("Oh no");
-		errno = 0;
-		return 1;
-	}
+        // FILE *fp = stdin;
+        int exit_status = 1;
+        if (1 == argc) {
+                fprintf(stderr, "maze: missing file argument\n");
+                goto EXIT;
+        }
 
-	if (!validate_file(fp)) {
-		printf("did it again\n");
-		return 1;
-	}
+        FILE *fp = fopen(argv[1], "r");
+        if (!fp) {
+                perror("maze");
+                errno = 0;
+                goto EXIT;
+        
+        }
+
+        if (!validate_file(fp)) {
+                fprintf(stderr, "maze: invalid file argument\n");
+                fclose(fp);
+                goto EXIT;
+        }
 
 	graph_t *graph = graph_create();
 	if (!get_set_graph_size(fp, graph)) {
 		return 1;
 	}
-	// while (!feof(fp)) {
-	//         char *curr_line = calloc(23, sizeof(char));
-	//         fgets(curr_line, 23, fp);
-	//         printf("%s", curr_line);
-	// }
 
-	// rewind(fp);
 	if (!matrix_graph_create(fp, graph)) {
                 printf("broke on create\n");
 		return 1;
@@ -62,6 +67,8 @@ int main(void)
         // }
 	print_solved(graph);
 
-	fclose(fp);
-
+	// fclose(fp);
+EXIT:
+        // fclose(fp);
+        return exit_status;
 }
