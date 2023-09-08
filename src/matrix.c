@@ -382,15 +382,22 @@ int bfs(graph_t * graph)
 
 void print_solved(graph_t * graph)
 {
-	for (int i = 0; i < graph->rows; ++i) {
-		for (int j = 0; j < graph->cols; ++j) {
-			if (graph->matrix[i][j].letter == '.') {
-				printf("\033[1;31m%c\033[0m",
-				       graph->matrix[i][j].letter);
-			} else {
-				printf("%c", graph->matrix[i][j].letter);
-			}
+        for (int row = 1; row < graph->rows + 1; ++row) {
+		for (int col = 1; col < graph->cols + 1; ++col) {
+                        // if (graph->matrix[row][col].letter == '.')
+			printf("%c", graph->matrix[row][col].letter);
 		}
 		printf("\n");
 	}
+	// for (int i = 0; i < graph->rows; ++i) {
+	// 	for (int j = 0; j < graph->cols; ++j) {
+	// 		if (graph->matrix[i][j].letter == '.') {
+	// 			printf("\033[1;31m%c\033[0m",
+	// 			       graph->matrix[i][j].letter);
+	// 		} else {
+	// 			printf("%c", graph->matrix[i][j].letter);
+	// 		}
+	// 	}
+	// 	printf("\n");
+	// }
 }
