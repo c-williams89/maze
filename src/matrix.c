@@ -119,7 +119,6 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 				graph->start->value = START;
 				graph->start->parent = graph->start;
                                 graph->size += 1;
-
 				break;
 			case '>':
 				if (graph->end) {
@@ -147,6 +146,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 				break;
 			case '\n':
 				break;
+                        // BUG: Is default needed? all cases should be handled already 
 			default:
 				break;
 			}

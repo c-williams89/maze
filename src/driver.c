@@ -5,6 +5,16 @@
 #include "../include/io_helper.h"
 #include "../include/matrix.h"
 
+// TODO: For entire project
+// [ ] Document and code comments
+// [ ] Add ABC's to all library functions
+// [ ] Implement optarg, no need for long opts
+// [ ] Re-write tests for new graph_t struct design
+// [ ] Write tests for pqueue library
+// [ ] Handle memory leak issues
+// [ ] create a directory of multiple map .txt files to run against the project
+
+
 int main(void)
 {
 	FILE *fp = fopen("./data/valid_map.txt", "r");
