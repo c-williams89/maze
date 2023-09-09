@@ -77,11 +77,8 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 
 int matrix_graph_create(FILE * fp, graph_t * graph)
 {
-        printf("Rows: %d, cols: %d\n", graph->rows, graph->cols);
 	int exit_status = 0;
 	graph->matrix = calloc(graph->rows + 2, sizeof(vertex_t *));
-	vertex_t **matrix = calloc(graph->rows + 2, sizeof(*matrix));
-        // for (int col = 0; col < graph->cols)
 	graph->start = NULL;
 	graph->end = NULL;
         char letter = '\0';
@@ -170,6 +167,7 @@ void print_graph(graph_t * graph)
 
 int matrix_enrich(graph_t * graph)
 {
+	int count = 0;
 	vertex_t *current = NULL;
 	vertex_t *neighbor = NULL;
 
@@ -203,6 +201,7 @@ int matrix_enrich(graph_t * graph)
 						// 	return 0;
 						// }
 						if (neighbor->value != WALL) {
+							++count;
 							matrix_add_edge(current,
 									neighbor);
 						}
@@ -213,9 +212,12 @@ int matrix_enrich(graph_t * graph)
 			}
 		}
 	}
+	printf("Called %d times\n", count);
 	return 1;
 }
 
+// BUG: 3920 bytes lost from this function somehow still. When run with debug flags, no errors,
+//  But 1 error when no debug flags are passed.
 static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 {
 	edge_t *new_edge = calloc(1, sizeof(*new_edge));
@@ -232,7 +234,6 @@ int bfs(graph_t * graph)
         pqueue_t *pqueue = pqueue_create(graph->size);
         pqueue_insert(pqueue, graph->start->value, graph->start);
         uint16_t level = 0;
-        printf("Graph size: %d\n", graph->size);
         while (!pqueue_is_empty(pqueue)) {
                 vertex_t *node = (vertex_t *)pqueue_pull(pqueue);
                 edge_t *current = node->neighbors;
@@ -256,17 +257,9 @@ int bfs(graph_t * graph)
 			}
                         current = current->next;
 		}
-                // do {
-                //         if (!current->destination->level) {
-                //                 current->destination->level = level + 1;
-                //                 current->destination->parent = node;
-                //                 pqueue_insert(pqueue, current->destination->value, current->destination);
-                //         }
-                //         current = current->next;
-                // } while (current);
-
                 level += 1;
         }
+	pqueue_destroy(pqueue);
 	llist_t *stack = llist_create();
 	vertex_t *node = graph->end;
 	int counter = 0;
@@ -281,6 +274,7 @@ int bfs(graph_t * graph)
 		++counter;
 	}
 	graph->end->letter = '>';
+	llist_destroy(stack);
         return 1;
         
 
@@ -331,14 +325,17 @@ void print_solved(graph_t * graph)
 {
         for (int row = 1; row < graph->rows + 1; ++row) {
 		for (int col = 1; col < graph->cols + 1; ++col) {
+			if (graph->matrix[row][col].letter == '!') {
+				graph->matrix[row][col].letter = ' ';
+			} 
 			printf("%c", graph->matrix[row][col].letter);
 		}
 		printf("\n");
 	}
 }
 
-// start is reset here, consider returning the llist
 bool matrix_validate_maze(graph_t *graph) {
+	bool b_exit_status = false;
         llist_t *queue = llist_create();
         vertex_t *node = &(graph)->matrix[0][0];
         llist_enqueue(queue, node);
@@ -347,17 +344,14 @@ bool matrix_validate_maze(graph_t *graph) {
         while (!llist_is_empty(queue)) {
                 vertex_t *next = (vertex_t *)llist_dequeue(queue);
                 if (next->letter == '@' || next->letter == '>') {
-                        return false;
+			goto EXIT;
                 }
 
                 edge_t *current = next->neighbors;
-                // if (!current) {
-                //         break;
-                // }
 
                 while (current) {
                         if (current->destination->letter == '@' || current->destination->letter == '>') {
-                                return false;
+                                goto EXIT;
                         }
 
                         if (!current->destination->level && current->destination->letter != '#') {
@@ -370,5 +364,29 @@ bool matrix_validate_maze(graph_t *graph) {
                 }
                 level += 1;
         }
-        return true;
+	b_exit_status = true;
+EXIT:
+	llist_destroy(queue);
+        return b_exit_status;
+}
+
+void matrix_destroy(graph_t *graph) {
+	if (!graph) {
+		return;
+	}
+
+	for (int row = 0; row < graph->rows; ++row) {
+		for (int col = 0; col < graph->cols; ++col) {
+			edge_t *tmp = graph->matrix[row][col].neighbors;
+			while (tmp) {
+				edge_t *next = tmp->next;
+				free(tmp);
+				tmp = next;
+			}
+		}
+		free(graph->matrix[row]);
+	}
+	free(graph->matrix);
+	
+	free(graph);
 }

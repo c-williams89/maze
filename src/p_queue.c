@@ -149,3 +149,12 @@ void pq_print(pqueue_t *pq) {
 bool pqueue_is_empty(pqueue_t *pqueue) {
         return (0 == pqueue->count) ? true : false;
 }
+
+void pqueue_destroy(pqueue_t *pqueue) {
+        if (!pqueue) {
+                return;
+        }
+        free(pqueue->heap);
+        free(pqueue);
+
+}
