@@ -255,6 +255,7 @@ int bfs(graph_t * graph)
 		}
                 level += 1;
         }
+	pqueue_destroy(pqueue);
 	llist_t *stack = llist_create();
 	vertex_t *node = graph->end;
 	int counter = 0;
@@ -326,8 +327,8 @@ void print_solved(graph_t * graph)
 	}
 }
 
-// start is reset here, consider returning the llist
 bool matrix_validate_maze(graph_t *graph) {
+	bool b_exit_status = false;
         llist_t *queue = llist_create();
         vertex_t *node = &(graph)->matrix[0][0];
         llist_enqueue(queue, node);
@@ -336,7 +337,7 @@ bool matrix_validate_maze(graph_t *graph) {
         while (!llist_is_empty(queue)) {
                 vertex_t *next = (vertex_t *)llist_dequeue(queue);
                 if (next->letter == '@' || next->letter == '>') {
-                        return false;
+			goto EXIT;
                 }
 
                 edge_t *current = next->neighbors;
@@ -346,7 +347,7 @@ bool matrix_validate_maze(graph_t *graph) {
 
                 while (current) {
                         if (current->destination->letter == '@' || current->destination->letter == '>') {
-                                return false;
+                                goto EXIT;
                         }
 
                         if (!current->destination->level && current->destination->letter != '#') {
@@ -359,5 +360,8 @@ bool matrix_validate_maze(graph_t *graph) {
                 }
                 level += 1;
         }
-        return true;
+	b_exit_status = true;
+EXIT:
+	llist_destroy(queue);
+        return b_exit_status;
 }

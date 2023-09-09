@@ -18,7 +18,7 @@
 	// Returns, but does not remove the lowest priority element in the queue
 	int pqueue_peek(pqueue_t *pqueue);
 
-	void pqueue_destroy(pqueue_t **pqueue);
+	void pqueue_destroy(pqueue_t *pqueue);
 
 	void pq_print(pqueue_t *pq);
 #endif
