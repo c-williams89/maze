@@ -79,7 +79,6 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 {
 	int exit_status = 0;
 	graph->matrix = calloc(graph->rows + 2, sizeof(vertex_t *));
-	vertex_t **matrix = calloc(graph->rows + 2, sizeof(*matrix));
 	graph->start = NULL;
 	graph->end = NULL;
         char letter = '\0';
