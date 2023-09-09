@@ -132,8 +132,6 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 			        	break;
 			        case ' ':
                                         graph->size += 1;
-                                        // graph->size += 1;
-
 			        	graph->matrix[row][col].value = DOOR;
 			        	break;
 			        // case '\n':
@@ -147,86 +145,6 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
         if (!graph->start || !graph->end) {
                 goto EXIT;
         }
-
-	// NOTE: The below works with assigning random ascii character to find holes in wall
-        // Working a new angle with artifical border around entire map.
-        /*
-        char letter = '\0';
-
-	for (int row = 0; row < graph->rows; ++row) {
-		char *curr_line = calloc(graph->cols + 2, sizeof(char));
-		fgets(curr_line, graph->cols + 2, fp);
-		char *tmp;
-		if ((0 == row) || (row == (graph->rows - 1))) {
-			for (int i = 0; i < strlen(curr_line); ++i) {
-				if (' ' == curr_line[i]) {
-					curr_line[i] = 26;
-				}
-			}
-		}
-		size_t delim = 0;
-		delim = strcspn(curr_line, "#");
-		for (size_t i = 0; i < delim; ++i) {
-			curr_line[i] = 26;
-		}
-		char *rear_delim = strrchr(curr_line, '#');
-		for (size_t i = strlen(curr_line) - 2;
-		     i > ((strlen(curr_line) - strlen(rear_delim))); --i) {
-			curr_line[i] = 26;
-		}
-		graph->matrix[row] = calloc(graph->cols, sizeof(vertex_t));
-
-		for (int col = 0; col < strlen(curr_line) - 1; ++col) {
-			letter = curr_line[col];
-			switch (letter) {
-			case '@':
-				if (graph->start) {
-					goto EXIT;
-				}
-				graph->start = graph->matrix[row] + col;
-				graph->start->level = INT_MAX;
-				graph->start->value = START;
-				graph->start->parent = graph->start;
-                                graph->size += 1;
-				break;
-			case '>':
-				if (graph->end) {
-					goto EXIT;
-				}
-                                graph->size += 1;
-
-				graph->end = graph->matrix[row] + col;
-				graph->end->value = END;
-				break;
-			case '#':
-                                graph->size += 1;
-
-				graph->matrix[row][col].value = WALL;
-				break;
-			case ' ':
-                                graph->size += 1;
-
-				graph->matrix[row][col].value = SPACE;
-				break;
-			case '+':
-                                graph->size += 1;
-
-				graph->matrix[row][col].value = DOOR;
-				break;
-			case '\n':
-				break;
-                        // BUG: Is default needed? all cases should be handled already 
-			default:
-				break;
-			}
-			graph->matrix[row][col].letter = letter;
-                        // graph->size += 1;
-		}
-	}
-        if (!graph->start || !graph->end) {
-                goto EXIT;
-        */
-        // }
 	exit_status = 1;
  EXIT:
 	return exit_status;
@@ -285,9 +203,7 @@ int matrix_enrich(graph_t * graph)
 						// }
 						if (neighbor->value != WALL) {
                                                         if(neighbor->letter == '@') {
-                                                                printf("%c found\n", current->letter);
                                                         }
-                                                        // current->letter = 'A';
 							matrix_add_edge(current,
 									neighbor);
 						}
@@ -405,9 +321,15 @@ bool matrix_validate_maze(graph_t *graph) {
 
                 edge_t *current = next->neighbors;
                 if (!current) {
-                        return false;
+                        // BUG: Breaks on the return false which is needed to ensure the
+                        //  while loop isnt entered with a null pointer.
+                        break;
+
+                        // printf("REturning here\n");
+                        // return false;
                 }
                 while (current) {
+                        // printf("Inside current loop\n");
                         // if (current->destination->letter == '@') {
                         //         printf("value: %d\n", current->destination->level);
                         //         if (current->destination->level) {
@@ -415,7 +337,6 @@ bool matrix_validate_maze(graph_t *graph) {
                         //         }
                         // }
                         if (!current->destination->level || current->destination->letter == '@') {
-                                // printf("%c Added to queue\n", current->destination->letter);
                                 current->destination->level = level + 1;
                                 current->destination->parent = next;
                                 llist_enqueue(queue, current->destination);

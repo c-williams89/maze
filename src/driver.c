@@ -7,6 +7,12 @@
 #include "../include/io_helper.h"
 #include "../include/matrix.h"
 
+typedef struct opt_t {
+        bool b_wall;
+        bool b_water;
+        bool b_door;
+} opt_t;
+
 // TODO: For entire project
 // [ ] Document and code comments
 // [ ] Add ABC's to all library functions
@@ -19,7 +25,8 @@
 
 int main(int argc, char *argv[])
 {
-        // FILE *fp = stdin;
+        opt_t *arg_flags =  calloc(1, sizeof(*arg_flags));
+        
         int exit_status = 1;
         if (1 == argc) {
                 fprintf(stderr, "maze: missing file argument\n");
@@ -49,22 +56,24 @@ int main(int argc, char *argv[])
                 switch (opt)
                 {
                 case 'd':
+                        arg_flags->b_door = true;
                         break;
                 case 'D':
+                        arg_flags->b_wall = true;
                         break;
                 case 'w':
+                        arg_flags->b_water = true;
                         break;
                 case '?':
-                        // fprintf(stderr, "maze: invalid option: '-%c'\n", opt);
+                        free(arg_flags);
                         goto EXIT;
                         break;
                 default:
                         break;
                 }
         }
-
-        // TODO: Optargs need to be handled before calling any of these functions
-	graph_t *graph = graph_create();
+	
+        graph_t *graph = graph_create();
 	if (!get_set_graph_size(fp, graph)) {
 		return 1;
 	}
@@ -73,11 +82,13 @@ int main(int argc, char *argv[])
                 printf("broke on create\n");
 		return 1;
 	}
+        
+        // NOTE: Need to pass args struct to enrich
 	if (!matrix_enrich(graph)) {
                 printf("broke on enrich");
 		return 1;
 	}
-	print_graph(graph);
+	// print_graph(graph);
 	// print_graph(graph);
 	
         if (!matrix_validate_maze(graph)) {
@@ -85,10 +96,10 @@ int main(int argc, char *argv[])
                 return 1;
         }
 
-        // if (!bfs(graph)) {
-        //         printf("Broken in bfs");
-        //         return 1;
-        // }
+        if (!bfs(graph)) {
+                printf("Broken in bfs");
+                return 1;
+        }
 	print_solved(graph);
 
 	// fclose(fp);
