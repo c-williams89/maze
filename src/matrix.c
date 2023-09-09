@@ -77,11 +77,9 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 
 int matrix_graph_create(FILE * fp, graph_t * graph)
 {
-        printf("Rows: %d, cols: %d\n", graph->rows, graph->cols);
 	int exit_status = 0;
 	graph->matrix = calloc(graph->rows + 2, sizeof(vertex_t *));
 	vertex_t **matrix = calloc(graph->rows + 2, sizeof(*matrix));
-        // for (int col = 0; col < graph->cols)
 	graph->start = NULL;
 	graph->end = NULL;
         char letter = '\0';
@@ -232,7 +230,6 @@ int bfs(graph_t * graph)
         pqueue_t *pqueue = pqueue_create(graph->size);
         pqueue_insert(pqueue, graph->start->value, graph->start);
         uint16_t level = 0;
-        printf("Graph size: %d\n", graph->size);
         while (!pqueue_is_empty(pqueue)) {
                 vertex_t *node = (vertex_t *)pqueue_pull(pqueue);
                 edge_t *current = node->neighbors;
@@ -256,15 +253,6 @@ int bfs(graph_t * graph)
 			}
                         current = current->next;
 		}
-                // do {
-                //         if (!current->destination->level) {
-                //                 current->destination->level = level + 1;
-                //                 current->destination->parent = node;
-                //                 pqueue_insert(pqueue, current->destination->value, current->destination);
-                //         }
-                //         current = current->next;
-                // } while (current);
-
                 level += 1;
         }
 	llist_t *stack = llist_create();
@@ -281,6 +269,7 @@ int bfs(graph_t * graph)
 		++counter;
 	}
 	graph->end->letter = '>';
+	llist_destroy(stack);
         return 1;
         
 

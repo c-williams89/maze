@@ -74,6 +74,11 @@ int main(int argc, char *argv[])
         }
 	
         graph_t *graph = graph_create();
+        if (!graph) {
+                fprintf(stderr, "graph_create: Error allocating memory\n");
+                goto EXIT;
+        }
+
 	if (!get_set_graph_size(fp, graph)) {
 		return 1;
 	}
@@ -87,8 +92,6 @@ int main(int argc, char *argv[])
                 printf("broke on enrich");
 		return 1;
 	}
-	print_graph(graph);
-	// print_graph(graph);
 	
         if (!matrix_validate_maze(graph)) {
                 printf("Not a valid maze validate\n");
@@ -101,10 +104,8 @@ int main(int argc, char *argv[])
                 return 1;
         }
 	print_solved(graph);
-        print_graph(graph);
 
-	// fclose(fp);
+	fclose(fp);
 EXIT:
-        // fclose(fp);
         return exit_status;
 }

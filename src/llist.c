@@ -185,7 +185,8 @@ uint64_t llist_get_size(llist_t * llist)
 	return llist->sz;
 }				llist_get_size() 
 
-void llist_purge(llist_t * llist)
+*/
+void llist_destroy(llist_t * llist)
 {
 	if (!llist) {
 		return;
@@ -200,8 +201,8 @@ void llist_purge(llist_t * llist)
 	}
 	llist->head = NULL;
 	llist->tail = NULL;
-}				llist_purge()
-*/
+}
+
 /*
 vertex_t *llist_find(llist_t * llist, const char *id)
 {

@@ -42,6 +42,7 @@ valgrind: clean $(BIN)
 
 clean: 
 	@rm -rf $(BIN) $(OBJ_DIR) $(CHECK)
+	@rm gmon.out
 	
 indent:
 	indent -linux $(SRC_DIR)/*.c
