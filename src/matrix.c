@@ -167,6 +167,7 @@ void print_graph(graph_t * graph)
 
 int matrix_enrich(graph_t * graph)
 {
+	int count = 0;
 	vertex_t *current = NULL;
 	vertex_t *neighbor = NULL;
 
@@ -200,6 +201,7 @@ int matrix_enrich(graph_t * graph)
 						// 	return 0;
 						// }
 						if (neighbor->value != WALL) {
+							++count;
 							matrix_add_edge(current,
 									neighbor);
 						}
@@ -210,9 +212,12 @@ int matrix_enrich(graph_t * graph)
 			}
 		}
 	}
+	printf("Called %d times\n", count);
 	return 1;
 }
 
+// BUG: 3920 bytes lost from this function somehow still. When run with debug flags, no errors,
+//  But 1 error when no debug flags are passed.
 static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 {
 	edge_t *new_edge = calloc(1, sizeof(*new_edge));
@@ -320,6 +325,9 @@ void print_solved(graph_t * graph)
 {
         for (int row = 1; row < graph->rows + 1; ++row) {
 		for (int col = 1; col < graph->cols + 1; ++col) {
+			if (graph->matrix[row][col].letter == '!') {
+				graph->matrix[row][col].letter = ' ';
+			} 
 			printf("%c", graph->matrix[row][col].letter);
 		}
 		printf("\n");
@@ -340,9 +348,6 @@ bool matrix_validate_maze(graph_t *graph) {
                 }
 
                 edge_t *current = next->neighbors;
-                // if (!current) {
-                //         break;
-                // }
 
                 while (current) {
                         if (current->destination->letter == '@' || current->destination->letter == '>') {
@@ -372,7 +377,12 @@ void matrix_destroy(graph_t *graph) {
 
 	for (int row = 0; row < graph->rows; ++row) {
 		for (int col = 0; col < graph->cols; ++col) {
-			free(graph->matrix[row][col].neighbors);
+			edge_t *tmp = graph->matrix[row][col].neighbors;
+			while (tmp) {
+				edge_t *next = tmp->next;
+				free(tmp);
+				tmp = next;
+			}
 		}
 		free(graph->matrix[row]);
 	}
