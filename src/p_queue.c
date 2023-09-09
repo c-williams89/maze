@@ -17,7 +17,7 @@ struct pqueue_t {
         struct node_t *back;
         struct node_t *heap;
         uint32_t count;
-        int capacity;
+        uint32_t capacity;
 };
 
 // TODO: Write custom function to compare value within vertex_t struct
@@ -82,15 +82,14 @@ INSERT_EXIT:
 }
 
 static void heapify_up(uint32_t position, node_t *heap) {
-        printf("Heapifying\n");
         if (0 == position) {
                 heap[position] = heap[0];
                 return;
         }
         uint32_t parent = (position - 1) / 2;
-        if (parent < 0) {
-                return;
-        }
+        // if (parent < 0) {
+        //         return;
+        // }
         node_t tmp;
         if (heap[parent].priority > heap[position].priority) {
                 tmp = heap[parent];
@@ -104,12 +103,12 @@ void * pqueue_pull(pqueue_t *pqueue) {
         
         if (!pqueue || !pqueue->heap) {
                 fprintf(stderr, "pqueue_pull: Invalid argument - NULL\n");
-                return -1;
+                return NULL;
         }
         void * temp;
         if (!pqueue->count) {
                 fprintf(stderr, "pqueue_pull: Queue is empty\n");
-                return -1;
+                return NULL;
         }
 
         temp = pqueue->heap[0].data;
@@ -139,11 +138,13 @@ static void heapify_down(uint32_t position, uint64_t size, node_t *heap) {
         }
 }
 
+/* Function currently unused
 void pq_print(pqueue_t *pq) {
-        for (int i = 0; i < pq->count; ++i) {
+        for (uint32_t i = 0; i < pq->count; ++i) {
                 printf("%d: %d\n", i, pq->heap[i].data);
         }
 }
+*/
 
 bool pqueue_is_empty(pqueue_t *pqueue) {
         return (0 == pqueue->count) ? true : false;
