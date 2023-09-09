@@ -83,12 +83,11 @@ int main(int argc, char *argv[])
 		return 1;
 	}
         
-        // NOTE: Need to pass args struct to enrich
 	if (!matrix_enrich(graph)) {
                 printf("broke on enrich");
 		return 1;
 	}
-	// print_graph(graph);
+	print_graph(graph);
 	// print_graph(graph);
 	
         if (!matrix_validate_maze(graph)) {
@@ -96,11 +95,13 @@ int main(int argc, char *argv[])
                 return 1;
         }
 
+        // NOTE: Need to pass args struct to bfs
         if (!bfs(graph)) {
                 printf("Broken in bfs");
-                return 1;
+                // return 1;
         }
 	print_solved(graph);
+        print_graph(graph);
 
 	// fclose(fp);
 EXIT:

@@ -178,8 +178,9 @@ int matrix_enrich(graph_t * graph)
 	for (int row = 0; row < graph->rows + 2; ++row) {
 		for (int col = 0; col < graph->cols + 2; ++col) {
 			current = &(graph->matrix[row][col]);
+                        // if (curr)
 			if (current->letter == ' ' || current->letter == '>'
-			    || current->letter == '@' || current->letter == 'a') {
+			    || current->letter == '@' || current->letter == 'a' || current->letter == '#') {
 				for (int i = 0; i < 4; ++i) {
 					int tgt_x = row + neighbor_x[i];
 					int tgt_y = col + neighbor_y[i];
@@ -201,12 +202,11 @@ int matrix_enrich(graph_t * graph)
 						// 	     row, col);
 						// 	return 0;
 						// }
-						if (neighbor->value != WALL) {
-                                                        if(neighbor->letter == '@') {
-                                                        }
+						// if (neighbor->value != WALL) {
+                                                        // printf("Adding: %c\n", current->letter);
 							matrix_add_edge(current,
 									neighbor);
-						}
+						// }
 						current->num_children += 1;
 					}
 
@@ -264,11 +264,11 @@ int bfs(graph_t * graph)
 		vertex_t *node = (vertex_t *) llist_dequeue(queue);
 		edge_t *current = node->neighbors;
 		if (!current) {
-			return;
+                        break;
+			// return;
 		}
 		do {
-
-			if (!current->destination->level) {
+			if (!current->destination->level && current->destination->letter != 'a') {
 				current->destination->level = level + 1;
 				current->destination->parent = node;
 				llist_enqueue(queue, current->destination);
@@ -278,13 +278,17 @@ int bfs(graph_t * graph)
 		level += 1;
 	}
 
+        // When here, graph.end.parent = NULL;
 	llist_t *stack = llist_create();
 	vertex_t *node = graph->end;
 	int counter = 0;
+        // BUG: infinte loop here
 	while (node != node->parent) {
+                printf("Inside while\n");
 		node->letter = '.';
 		llist_push(stack, node);
                 if (!node->parent) {
+                        printf("returning from list\n");
                         return 0;
                 }
 		node = node->parent;
@@ -292,8 +296,6 @@ int bfs(graph_t * graph)
 	}
 	graph->end->letter = '>';
         return 1;
-        
-
 }
 // TODO: Possibly put validation in it's own function so that we can still print original maze
 
@@ -307,6 +309,7 @@ void print_solved(graph_t * graph)
 	}
 }
 
+// start is reset here, consider returning the llist
 bool matrix_validate_maze(graph_t *graph) {
         llist_t *queue = llist_create();
         vertex_t *node = &(graph)->matrix[0][0];
@@ -324,21 +327,17 @@ bool matrix_validate_maze(graph_t *graph) {
                         // BUG: Breaks on the return false which is needed to ensure the
                         //  while loop isnt entered with a null pointer.
                         break;
-
-                        // printf("REturning here\n");
-                        // return false;
                 }
+
                 while (current) {
-                        // printf("Inside current loop\n");
-                        // if (current->destination->letter == '@') {
-                        //         printf("value: %d\n", current->destination->level);
-                        //         if (current->destination->level) {
-                        //                 printf("trueee\n");
-                        //         }
-                        // }
-                        if (!current->destination->level || current->destination->letter == '@') {
+                        if (current->destination->letter == '@' || current->destination->letter == '>') {
+                                return false;
+                        }
+
+                        if (!current->destination->level && current->destination->letter != '#') {
                                 current->destination->level = level + 1;
                                 current->destination->parent = next;
+                                current->destination->letter = '!';
                                 llist_enqueue(queue, current->destination);
                         }
                         current = current->next;
