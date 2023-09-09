@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
         // NOTE: Need to pass args struct to bfs
         if (!bfs(graph)) {
                 printf("Broken in bfs");
-                // return 1;
+                return 1;
         }
 	print_solved(graph);
         print_graph(graph);
