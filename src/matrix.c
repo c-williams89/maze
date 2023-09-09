@@ -14,6 +14,7 @@ typedef struct vertex_t {
 	struct vertex_t *parent;
 	struct edge_t *neighbors;
 	int value;
+	int weight;
 	char letter;
 	int level;
 	int num_children;
@@ -179,7 +180,7 @@ int matrix_enrich(graph_t * graph)
 		for (int col = 0; col < graph->cols + 2; ++col) {
 			current = &(graph->matrix[row][col]);
 			if (current->letter == ' ' || current->letter == '>'
-			    || current->letter == '@' || current->letter == 'a') {
+			    || current->letter == '@' || current->letter == 'a' || current->letter == '#') {
 				for (int i = 0; i < 4; ++i) {
 					int tgt_x = row + neighbor_x[i];
 					int tgt_y = col + neighbor_y[i];
@@ -202,8 +203,6 @@ int matrix_enrich(graph_t * graph)
 						// 	return 0;
 						// }
 						if (neighbor->value != WALL) {
-                                                        if(neighbor->letter == '@') {
-                                                        }
 							matrix_add_edge(current,
 									neighbor);
 						}
@@ -229,7 +228,7 @@ static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 int bfs(graph_t * graph)
 {
         // TODO: Come back to this after confirming new validation works
-        /*
+        
         pqueue_t *pqueue = pqueue_create(graph->size);
         pqueue_insert(pqueue, graph->start->value, graph->start);
         uint16_t level = 0;
@@ -237,25 +236,56 @@ int bfs(graph_t * graph)
         while (!pqueue_is_empty(pqueue)) {
                 vertex_t *node = (vertex_t *)pqueue_pull(pqueue);
                 edge_t *current = node->neighbors;
-                if (!current) {
-                        return;
-                }
-
-                do {
+                // if (!current) {
+                //         return;
+                // }
+		while (current) {
                         if (!current->destination->level) {
+				current->destination->weight = node->weight + current->destination->value;
+				current->destination->value += node->value;
                                 current->destination->level = level + 1;
                                 current->destination->parent = node;
-                                pqueue_insert(pqueue, current->destination->value, current->destination);
-                        }
+                                pqueue_insert(pqueue, current->destination->weight, current->destination);
+                        } else {
+				int weight = node->weight + current->destination->value;
+				if (weight < current->destination->weight) {
+					current->destination->parent = node;
+					current->destination->weight = weight;
+					pqueue_insert(pqueue, current->destination->weight, current->destination);
+				}
+			}
                         current = current->next;
-                } while (current);
+		}
+                // do {
+                //         if (!current->destination->level) {
+                //                 current->destination->level = level + 1;
+                //                 current->destination->parent = node;
+                //                 pqueue_insert(pqueue, current->destination->value, current->destination);
+                //         }
+                //         current = current->next;
+                // } while (current);
 
                 level += 1;
         }
-        */
+	llist_t *stack = llist_create();
+	vertex_t *node = graph->end;
+	int counter = 0;
+	while (node != node->parent) {
+		node->letter = '.';
+		llist_push(stack, node);
+                if (!node->parent) {
+                        printf("returning from list\n");
+                        return 0;
+                }
+		node = node->parent;
+		++counter;
+	}
+	graph->end->letter = '>';
+        return 1;
+        
 
         // NOTE: Everything below works
-        
+        /*
 	llist_t *queue = llist_create();
 	llist_enqueue(queue, graph->start);
 	uint16_t level = 0;
@@ -264,10 +294,10 @@ int bfs(graph_t * graph)
 		vertex_t *node = (vertex_t *) llist_dequeue(queue);
 		edge_t *current = node->neighbors;
 		if (!current) {
-			return;
+                        break;
+			// return;
 		}
 		do {
-
 			if (!current->destination->level) {
 				current->destination->level = level + 1;
 				current->destination->parent = node;
@@ -278,6 +308,7 @@ int bfs(graph_t * graph)
 		level += 1;
 	}
 
+        // When here, graph.end.parent = NULL;
 	llist_t *stack = llist_create();
 	vertex_t *node = graph->end;
 	int counter = 0;
@@ -285,6 +316,7 @@ int bfs(graph_t * graph)
 		node->letter = '.';
 		llist_push(stack, node);
                 if (!node->parent) {
+                        printf("returning from list\n");
                         return 0;
                 }
 		node = node->parent;
@@ -292,10 +324,8 @@ int bfs(graph_t * graph)
 	}
 	graph->end->letter = '>';
         return 1;
-        
-
+	*/
 }
-// TODO: Possibly put validation in it's own function so that we can still print original maze
 
 void print_solved(graph_t * graph)
 {
@@ -307,6 +337,7 @@ void print_solved(graph_t * graph)
 	}
 }
 
+// start is reset here, consider returning the llist
 bool matrix_validate_maze(graph_t *graph) {
         llist_t *queue = llist_create();
         vertex_t *node = &(graph)->matrix[0][0];
@@ -320,25 +351,19 @@ bool matrix_validate_maze(graph_t *graph) {
                 }
 
                 edge_t *current = next->neighbors;
-                if (!current) {
-                        // BUG: Breaks on the return false which is needed to ensure the
-                        //  while loop isnt entered with a null pointer.
-                        break;
+                // if (!current) {
+                //         break;
+                // }
 
-                        // printf("REturning here\n");
-                        // return false;
-                }
                 while (current) {
-                        // printf("Inside current loop\n");
-                        // if (current->destination->letter == '@') {
-                        //         printf("value: %d\n", current->destination->level);
-                        //         if (current->destination->level) {
-                        //                 printf("trueee\n");
-                        //         }
-                        // }
-                        if (!current->destination->level || current->destination->letter == '@') {
+                        if (current->destination->letter == '@' || current->destination->letter == '>') {
+                                return false;
+                        }
+
+                        if (!current->destination->level && current->destination->letter != '#') {
                                 current->destination->level = level + 1;
                                 current->destination->parent = next;
+                                current->destination->letter = '!';
                                 llist_enqueue(queue, current->destination);
                         }
                         current = current->next;
