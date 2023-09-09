@@ -107,5 +107,7 @@ int main(int argc, char *argv[])
 
 	fclose(fp);
 EXIT:
+        free(arg_flags);
+        matrix_destroy(graph);
         return exit_status;
 }

@@ -201,6 +201,7 @@ void llist_destroy(llist_t * llist)
 	}
 	llist->head = NULL;
 	llist->tail = NULL;
+	free(llist);
 }
 
 /*

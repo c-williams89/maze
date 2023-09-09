@@ -365,3 +365,19 @@ EXIT:
 	llist_destroy(queue);
         return b_exit_status;
 }
+
+void matrix_destroy(graph_t *graph) {
+	if (!graph) {
+		return;
+	}
+
+	for (int row = 0; row < graph->rows; ++row) {
+		for (int col = 0; col < graph->cols; ++col) {
+			free(graph->matrix[row][col].neighbors);
+		}
+		free(graph->matrix[row]);
+	}
+	free(graph->matrix);
+	
+	free(graph);
+}
