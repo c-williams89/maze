@@ -1,0 +1,65 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{listings}
+
+\title{maze testplan}
+\author{WO1 Clayton E. Williams}
+\date{September 2023}
+
+\begin{document}
+
+\maketitle
+\section{Purpose}
+maze is a program that examines a map file, and prints the map with a shortest
+path between start and end, if it exists.\\
+The purpose of this test plan is to provide a process of testing the functions of
+auxiliary libraries to gain reasonable assurance that the program exhibits desired
+behavior and does not crash on unexpected or invalid input.
+
+\section{Components}
+maze contains both automated and manual testing
+    \subsection{Automated Tests - Test Suite}
+    Automation of unit testing is provided through the make tool and can be run from the command line as:
+    \begin{lstlisting}[language=bash]
+    $ make check    
+    \end{lstlisting}
+    There are three test suites to test maze
+
+    \begin{itemize}
+        \item test\_io\_helper
+        \item test\_matrix
+        \item test\_llist
+    \end{itemize}
+
+    \subsection{Test Cases}
+    \begin{itemize}
+        \item test\_validate\_file\_valid\\
+        This test tests the validate\_file() function with valid files and asserts the return value is 1.
+        \item test\_validate\_file\_invalid\\
+        This test tests the validate\_file() function with invalid files, either those that do not exist, directories, or chose such as /dev/null, and asserts they return 0.
+        \item test\_graph\_create\\
+        This tests the graph\_create() function, asserting the returned pointer is not NULL
+        \item test\_get\_set\_graph\_size\\
+        This tests the get\_set\_graph\_size() function, asserting the rows and columns of the graph are set appropriately based on the manual calculation of the ./data/valid\_map.txt file. 
+        \item test\_get\_set\_graph\_size\_invalid\\
+        This tests get\_set\_graph\_size() with a map that contains invalid characters and asserts the return value is 0.
+        \item test\_matrix\_graph\_create\\
+        This tests the matrix\_graph\_create() function with a valid map, asserting the function returns 1, and that the start and null pointers are not NULL, and that the start and end pointer are equal to manually calculated matrix vertices.
+        \item test\_matrix\_graph\_create\_invalid\\
+        This tests the matrix\_graph\_create() function with maps that contain either none, or more than one start/end point, asserting the return value is 0.
+        \item test\_matrix\_enrich\\
+        Using previously validated maps, this function tests the matrix\_enrich(), asserting the return value is 1 and that pointers and num\_children are set appropriately.
+        \item test\_bfs\\
+        This tests the bfs() function with a valid map, asserting the return value is 1.
+        \item test\_bfs\_invalid\\
+        This tests the bfs() function with a maze in which there is no path between the start and end point, ensuring the return value is 0.
+    \end{itemize}
+    Because of the modular design of the program, and the attempt to reduce iterations over the file or matrix, each function handles a small piece of the overall maze validation, and therefore, maze validation is cascading, with functions such as bfs() not being run unless matrix\_validate\_maze returns 1, which relies on matrix\_enrich returning 1, and so on.
+
+    \subsection{Manual Tests - Valgrind}
+    Manual testing of the program is to ensure there are no memory leaks or errors reported by valgrind:
+        \begin{lstlisting}[language=bash]
+        $ make clean && make debug
+        $ valgrind ./maze <FILE> [OPTION]
+        \end{lstlisting}
+\end{document}

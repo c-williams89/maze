@@ -28,14 +28,11 @@ typedef struct graph_t {
 	uint16_t size;
 } graph_t;
 
-START_TEST(test_graph_create_valid)
+START_TEST(test_graph_create)
 {
      	FILE *fp = fopen("./data/valid_map.txt", "r");
      	graph_t *graph = graph_create();
-//      vertex_t **matrix = matrix_create(fp, 83, 23);
-//      ck_assert_int_eq((matrix[1] + 11)->level, INT_MAX);
 	ck_assert_ptr_ne(graph, NULL);
-//      ck_assert_ptr_ne(matrix, NULL);
 } END_TEST 
 
 START_TEST(test_get_set_graph_size) {
@@ -113,7 +110,7 @@ START_TEST(test_bfs_invalid) {
 }END_TEST
 
 static TFun core_tests[] = {
-	test_graph_create_valid,
+	test_graph_create,
 	test_get_set_graph_size,
 	test_get_set_graph_size_invalid,
 	test_matrix_graph_create,

@@ -30,7 +30,6 @@ START_TEST(test_validate_file_valid)
 		ck_assert_int_eq(validate_file(invalid_streams[i]), 0);
 
 	}
-
 } END_TEST static TFun core_tests[] = {
 
 	test_validate_file_valid,
