@@ -222,7 +222,6 @@ static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 int bfs(graph_t * graph)
 {
 	// TODO: Come back to this after confirming new validation works
-
 	pqueue_t *pqueue = pqueue_create(graph->size);
 	pqueue_insert(pqueue, graph->start->value, graph->start);
 	uint16_t level = 0;
@@ -263,7 +262,6 @@ int bfs(graph_t * graph)
 		node->letter = '.';
 		llist_push(stack, node);
 		if (!node->parent) {
-			printf("returning from list\n");
 			return 0;
 		}
 		node = node->parent;
@@ -329,6 +327,7 @@ void print_solved(graph_t * graph)
 	}
 }
 
+// TODO: make static and call from enrich before returning. Would need to return an int.
 bool matrix_validate_maze(graph_t * graph)
 {
 	bool b_exit_status = false;

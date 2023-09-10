@@ -92,6 +92,26 @@ START_TEST(test_matrix_enrich) {
 	ck_assert_ptr_eq(graph->start->neighbors->destination, start_neigh);
 }END_TEST
 
+// bfs only fails when there is no valid route from start to end
+START_TEST(test_bfs_valid) {
+	FILE *fp = fopen("./data/valid_map.txt", "r");
+	graph_t *graph = graph_create();
+	get_set_graph_size(fp, graph);
+	matrix_graph_create(fp, graph);
+	matrix_enrich(graph);
+	ck_assert_int_eq(bfs(graph), 1);
+
+}END_TEST
+
+START_TEST(test_bfs_invalid) {
+	FILE *fp = fopen("./data/invalid_bfs.txt", "r");
+	graph_t *graph = graph_create();
+	get_set_graph_size(fp, graph);
+	matrix_graph_create(fp, graph);
+	matrix_enrich(graph);
+	ck_assert_int_eq(bfs(graph), 0);
+}END_TEST
+
 static TFun core_tests[] = {
 	test_graph_create_valid,
 	test_get_set_graph_size,
@@ -99,7 +119,9 @@ static TFun core_tests[] = {
 	test_matrix_graph_create,
 	test_matrix_graph_create_invalid,
 	test_matrix_enrich,
-     NULL
+	test_bfs_valid,
+	test_bfs_invalid,
+	NULL
 };
 
 Suite *test_matrix(void)
