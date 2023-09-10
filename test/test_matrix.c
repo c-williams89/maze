@@ -54,6 +54,28 @@ START_TEST(test_get_set_graph_size_invalid) {
 	ck_assert_int_eq(get_set_graph_size(fp, graph), 0);
 } END_TEST
 
+// Tests matrix creates successfully and tests known values assigned to graph.
+START_TEST(test_matrix_graph_create) {
+	FILE *fp = fopen("./data/valid_map.txt", "r");
+	graph_t *graph = graph_create();
+	graph->rows = 8;
+	graph->cols = 23;
+	ck_assert_int_eq(matrix_graph_create(fp, graph), 1);
+	ck_assert_ptr_ne(graph->start, NULL);
+	ck_assert_ptr_ne(graph->end, NULL);
+	vertex_t *start = &(graph)->matrix[2][15];
+	vertex_t *end = &(graph)->matrix[2][4];
+	ck_assert_ptr_eq(start, graph->start);
+	ck_assert_ptr_eq(end, graph->end);
+}END_TEST
+
+START_TEST(test_matrix_graph_create_invalid) {
+	FILE *fp = fopen("./data/invalid_graph.txt", "r");
+	graph_t *graph = graph_create();
+	graph->rows = 8;
+	graph->cols = 23;
+	ck_assert_int_eq(matrix_graph_create(fp, graph), 0);
+}END_TEST
 // START_TEST(test_matrix_enrich_valid)
 // {
 //      uint16_t rows = 8;
@@ -69,7 +91,8 @@ static TFun core_tests[] = {
 	test_graph_create_valid,
 	test_get_set_graph_size,
 	test_get_set_graph_size_invalid,
-//      test_matrix_enrich_valid,
+	test_matrix_graph_create,
+	test_matrix_graph_create_invalid,
      NULL
 };
 

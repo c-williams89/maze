@@ -129,7 +129,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 					break;
 				case ' ':
 					graph->size += 1;
-					graph->matrix[row][col].value = DOOR;
+					graph->matrix[row][col].value = SPACE;
 					break;
 					// case '\n':
 					//         continue;
