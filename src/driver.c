@@ -25,15 +25,15 @@ typedef struct opt_t {
 
 int main(int argc, char *argv[])
 {
-        FILE *fp = stdin;
+        // FILE *fp = stdin;
         int exit_status = 1;
         if (1 == argc) {
                 fprintf(stderr, "maze: missing file argument\n");
                 goto EXIT;
         }
 
-        fp = fopen(argv[1], "r");
-        // FILE *fp = fopen(argv[1], "r");
+        // fp = fopen(argv[1], "r");
+        FILE *fp = fopen(argv[1], "r");
         if (!fp) {
                 perror("maze");
                 errno = 0;
@@ -78,6 +78,8 @@ int main(int argc, char *argv[])
                 }
         }
 	
+        // HACK: Does each function need to validate against NULL since it has already
+        //  been validated in create and validate_file?
         graph_t *graph = graph_create();
         if (!graph) {
                 fprintf(stderr, "graph_create: Error allocating memory\n");
@@ -108,11 +110,12 @@ int main(int argc, char *argv[])
                 printf("Broken in bfs");
                 return 1;
         }
-	print_solved(graph);
-
+	// print_solved(graph);
+GOOD_EXIT:
+        print_solved(graph);
+        free(arg_flags);
+        matrix_destroy(graph);
 EXIT:
         fclose(fp);
-        // free(arg_flags);
-        // matrix_destroy(graph);
         return exit_status;
 }

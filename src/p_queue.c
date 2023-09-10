@@ -138,14 +138,6 @@ static void heapify_down(uint32_t position, uint64_t size, node_t *heap) {
         }
 }
 
-/* Function currently unused
-void pq_print(pqueue_t *pq) {
-        for (uint32_t i = 0; i < pq->count; ++i) {
-                printf("%d: %d\n", i, pq->heap[i].data);
-        }
-}
-*/
-
 bool pqueue_is_empty(pqueue_t *pqueue) {
         return (0 == pqueue->count) ? true : false;
 }
