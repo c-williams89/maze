@@ -190,16 +190,6 @@ int matrix_enrich(graph_t * graph)
 						neighbor =
 						    &(graph->
 						      matrix[tgt_x][tgt_y]);
-						// if ((neighbor->letter == 26)
-						//     || (neighbor->letter ==
-						// 	'\n')) {
-						// 	printf
-						// 	    ("Invalid maze\n");
-						// 	printf
-						// 	    ("Broken on %d:%d\n",
-						// 	     row, col);
-						// 	return 0;
-						// }
 						if (neighbor->value != WALL) {
 							++count;
 							matrix_add_edge(current,
@@ -207,12 +197,10 @@ int matrix_enrich(graph_t * graph)
 						}
 						current->num_children += 1;
 					}
-
 				}
 			}
 		}
 	}
-	printf("Called %d times\n", count);
 	return 1;
 }
 
@@ -237,9 +225,6 @@ int bfs(graph_t * graph)
         while (!pqueue_is_empty(pqueue)) {
                 vertex_t *node = (vertex_t *)pqueue_pull(pqueue);
                 edge_t *current = node->neighbors;
-                // if (!current) {
-                //         return;
-                // }
 		while (current) {
                         if (!current->destination->level) {
 				current->destination->weight = node->weight + current->destination->value;
