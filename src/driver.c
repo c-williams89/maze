@@ -11,6 +11,11 @@ typedef struct opt_t {
 	bool b_wall;
 	bool b_water;
 	bool b_door;
+        // Based on command line args, strncat to valid_chars '+' or '~' to compare against;
+        // When validating character within matrix_enrich, strrchr against this string
+        // to determine whether it is a valid neighbor or not.
+        char *valid_chars;
+        
 } opt_t;
 
 // TODO: For entire project

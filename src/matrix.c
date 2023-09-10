@@ -77,6 +77,8 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 
 int matrix_graph_create(FILE * fp, graph_t * graph)
 {
+	// TODO: Consider updating graph->rows and graph->cols += 2 so that it is
+	//  easier to loop over the matrix instead of callocing +2, for i = 1, etc.
 	int exit_status = 0;
 	graph->matrix = calloc(graph->rows + 2, sizeof(vertex_t *));
 	graph->start = NULL;
@@ -129,7 +131,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 					break;
 				case ' ':
 					graph->size += 1;
-					graph->matrix[row][col].value = DOOR;
+					graph->matrix[row][col].value = SPACE;
 					break;
 					// case '\n':
 					//         continue;
@@ -176,6 +178,8 @@ int matrix_enrich(graph_t * graph)
 	for (int row = 0; row < graph->rows + 2; ++row) {
 		for (int col = 0; col < graph->cols + 2; ++col) {
 			current = &(graph->matrix[row][col]);
+			// NOTE: Implementing the char array of valid characters
+			//  Can simplify this if (if strchr(valid_chars, current->letter))
 			if (current->letter == ' ' || current->letter == '>'
 			    || current->letter == '@' || current->letter == 'a'
 			    || current->letter == '#') {
@@ -194,8 +198,8 @@ int matrix_enrich(graph_t * graph)
 							++count;
 							matrix_add_edge(current,
 									neighbor);
-						}
 						current->num_children += 1;
+						}
 					}
 				}
 			}
@@ -218,7 +222,6 @@ static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 int bfs(graph_t * graph)
 {
 	// TODO: Come back to this after confirming new validation works
-
 	pqueue_t *pqueue = pqueue_create(graph->size);
 	pqueue_insert(pqueue, graph->start->value, graph->start);
 	uint16_t level = 0;
@@ -259,7 +262,6 @@ int bfs(graph_t * graph)
 		node->letter = '.';
 		llist_push(stack, node);
 		if (!node->parent) {
-			printf("returning from list\n");
 			return 0;
 		}
 		node = node->parent;
@@ -325,6 +327,7 @@ void print_solved(graph_t * graph)
 	}
 }
 
+// TODO: make static and call from enrich before returning. Would need to return an int.
 bool matrix_validate_maze(graph_t * graph)
 {
 	bool b_exit_status = false;
