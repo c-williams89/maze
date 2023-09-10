@@ -18,7 +18,7 @@ int validate_file(FILE * fp)
 		fprintf(stderr, "validate_file: Invalid file pointer - NULL\n");
 		goto EXIT;
 	}
-	
+
 	struct stat path_stat;
 	int fileno(FILE * fp);
 	int fd = fileno(fp);

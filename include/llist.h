@@ -81,7 +81,7 @@ bool llist_is_empty(llist_t * llist);
 
 // Emptys linked list without doing anything to stored pointers
 //
-void llist_destroy(llist_t *llist);
+void llist_destroy(llist_t * llist);
 
 // uint64_t llist_get_size(llist_t *llist);
 
