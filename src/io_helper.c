@@ -13,8 +13,13 @@ typedef struct graph_data {
 
 int validate_file(FILE * fp)
 {
-	struct stat path_stat;
 	int exit_status = 0;
+	if (!fp) {
+		fprintf(stderr, "validate_file: Invalid file pointer - NULL\n");
+		goto EXIT;
+	}
+	
+	struct stat path_stat;
 	int fileno(FILE * fp);
 	int fd = fileno(fp);
 
@@ -22,12 +27,6 @@ int validate_file(FILE * fp)
 	if (-1 == fstat(fd, &path_stat)) {
 		perror("validate_file: Unable to retrieve file information");
 		errno = 0;
-		goto EXIT;
-	}
-	// Tests the case where stdin, stdout, or stderr have been passed.
-	if (3 > fd) {
-		fprintf(stderr,
-			"validate_file: Invalid stream. Must be file.\n");
 		goto EXIT;
 	}
 
@@ -40,33 +39,3 @@ int validate_file(FILE * fp)
  EXIT:
 	return exit_status;
 }
-
-// TODO: Build a struct for map information, rows, columns, start, and end to pass that 
-//  struct around where needed
-// NOTE: Consider moving to the matrix helper source
-// graph_data * get_set_graph_size(FILE *fp) {
-//         graph_data *graph = calloc(1, sizeof(*graph));
-//         if (!graph) {
-//                 perror("get_graph_size: Error allocating memory\n");
-//                 errno = 0;
-//                 goto EXIT;
-//         }
-//         graph->cols = 0;
-//         graph->rows = 1;
-//         uint16_t cols = 0;
-//         char c = '\0';
-//         while ((c = fgetc(fp)) != EOF) {
-//                 if ('\n' == c) {
-//                         if (cols > graph->cols) {
-//                                 graph->cols = cols;
-//                         }
-//                         cols = 0;
-//                         graph->rows++;
-//                         continue;
-//                 }
-//                 ++cols;
-//         }
-//         // printf("Rows: %d\tCols: %d\n", graph->rows, graph->cols);
-// EXIT:
-//         return graph;
-// }

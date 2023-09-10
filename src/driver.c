@@ -25,15 +25,15 @@ typedef struct opt_t {
 
 int main(int argc, char *argv[])
 {
-        opt_t *arg_flags =  calloc(1, sizeof(*arg_flags));
-        
+        FILE *fp = stdin;
         int exit_status = 1;
         if (1 == argc) {
                 fprintf(stderr, "maze: missing file argument\n");
                 goto EXIT;
         }
 
-        FILE *fp = fopen(argv[1], "r");
+        fp = fopen(argv[1], "r");
+        // FILE *fp = fopen(argv[1], "r");
         if (!fp) {
                 perror("maze");
                 errno = 0;
@@ -43,7 +43,12 @@ int main(int argc, char *argv[])
 
         if (!validate_file(fp)) {
                 fprintf(stderr, "maze: invalid file argument\n");
-                fclose(fp);
+                goto EXIT;
+        }
+
+        opt_t *arg_flags =  calloc(1, sizeof(*arg_flags));
+        if (!arg_flags) {
+                fprintf(stderr, "maze: Unable to allocate memory\n");
                 goto EXIT;
         }
         
@@ -105,9 +110,9 @@ int main(int argc, char *argv[])
         }
 	print_solved(graph);
 
-	fclose(fp);
 EXIT:
-        free(arg_flags);
-        matrix_destroy(graph);
+        fclose(fp);
+        // free(arg_flags);
+        // matrix_destroy(graph);
         return exit_status;
 }
