@@ -76,16 +76,21 @@ START_TEST(test_matrix_graph_create_invalid) {
 	graph->cols = 23;
 	ck_assert_int_eq(matrix_graph_create(fp, graph), 0);
 }END_TEST
-// START_TEST(test_matrix_enrich_valid)
-// {
-//      uint16_t rows = 8;
-//      uint16_t cols = 23;
-//      FILE *fp = fopen("./data/valid_map.txt", "r");
-//      vertex_t **matrix = matrix_create(fp, rows, cols);
-//      matrix = matrix_enrich(matrix, rows, cols);
-//      ck_assert_int_eq(matrix[0][0].num_children, 2);
-//      ck_assert_int_ne(matrix[0][0].neighbors, NULL);
-// } END_TEST 
+
+START_TEST(test_matrix_enrich) {
+	FILE *fp = fopen("./data/valid_map.txt", "r");
+	graph_t *graph = graph_create();
+	graph->rows = 8;
+	graph->cols = 23;
+	matrix_graph_create(fp, graph);
+	ck_assert_int_eq(matrix_enrich(graph), 1);
+	ck_assert_ptr_ne(graph->start->neighbors, NULL);
+	ck_assert_int_eq(graph->start->num_children, 1);
+	ck_assert_int_eq(graph->end->num_children, 3);
+	ck_assert_int_eq(graph->matrix[0][0].num_children, 2);
+	vertex_t *start_neigh = &(graph)->matrix[2][16];
+	ck_assert_ptr_eq(graph->start->neighbors->destination, start_neigh);
+}END_TEST
 
 static TFun core_tests[] = {
 	test_graph_create_valid,
@@ -93,6 +98,7 @@ static TFun core_tests[] = {
 	test_get_set_graph_size_invalid,
 	test_matrix_graph_create,
 	test_matrix_graph_create_invalid,
+	test_matrix_enrich,
      NULL
 };
 
