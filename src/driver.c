@@ -7,17 +7,6 @@
 #include "../include/io_helper.h"
 #include "../include/matrix.h"
 
-typedef struct opt_t {
-	bool b_wall;
-	bool b_water;
-	bool b_door;
-        // Based on command line args, strncat to valid_chars '+' or '~' to compare against;
-        // When validating character within matrix_enrich, strrchr against this string
-        // to determine whether it is a valid neighbor or not.
-        char *valid_chars;
-        
-} opt_t;
-
 // TODO: For entire project
 // [ ] Document and code comments
 // [ ] Add ABC's to all library functions
@@ -48,12 +37,6 @@ int main(int argc, char *argv[])
 		goto EXIT;
 	}
 
-	opt_t *arg_flags = calloc(1, sizeof(*arg_flags));
-	if (!arg_flags) {
-		fprintf(stderr, "maze: Unable to allocate memory\n");
-		goto EXIT;
-	}
-
         char valid_chars[7] = { 0 };
         memcpy(valid_chars, "@ >", 3);
 	int opt;
@@ -65,18 +48,14 @@ int main(int argc, char *argv[])
 		switch (opt) {
 		case 'd':
                         strcat(valid_chars, "+");
-			arg_flags->b_door = true;
 			break;
 		case 'D':
                         strcat(valid_chars, "#");
-			arg_flags->b_wall = true;
 			break;
 		case 'w':
                         strcat(valid_chars, "~");
-			arg_flags->b_water = true;
 			break;
 		case '?':
-			free(arg_flags);
 			goto EXIT;
 			break;
 		default:
@@ -111,15 +90,15 @@ int main(int argc, char *argv[])
 		printf("Not a valid maze validate\n");
 		return 1;
 	}
-	// NOTE: Need to pass args struct to bfs
+
 	if (!bfs(graph)) {
+                print_graph(graph);
 		printf("Broken in bfs");
 		return 1;
 	}
-	// print_solved(graph);
  GOOD_EXIT:
+        print_graph(graph);
 	print_solved(graph);
-	free(arg_flags);
 	matrix_destroy(graph);
  EXIT:
 	fclose(fp);

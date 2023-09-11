@@ -17,7 +17,7 @@ typedef struct vertex_t {
 	int weight;
 	char letter;
 	int level;
-	int num_children;
+	// int num_children;
 } vertex_t;
 
 typedef struct edge_t {
@@ -41,8 +41,6 @@ graph_t *graph_create(char *valid_chars)
 {
 	graph_t *graph = calloc(1, sizeof(*graph));
 	memcpy(graph->valid_chars, valid_chars, 6);
-	// strncat(graph->valid_chars, "@ >#", 4);
-	// graph->valid_chars = "@ >#";
 	return graph;
 }
 
@@ -54,7 +52,7 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 		errno = 0;
 		goto EXIT;
 	}
-	// const char *valid_chars = "@ >#+~";
+
 	graph->cols = 0;
 	graph->rows = 1;
 	uint16_t cols = 0;
@@ -68,7 +66,7 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 			graph->rows++;
 			continue;
 		}
-		
+
 		if (!strchr(graph->valid_chars, c) && c != '#') {
 			goto EXIT;
 		}
@@ -111,6 +109,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 				}
 				switch (letter) {
 				case '@':
+				printf("%d %d\n", row, col);
 					if (graph->start) {
 						goto EXIT;
 					}
@@ -159,13 +158,6 @@ void print_graph(graph_t * graph)
 		}
 		printf("\n");
 	}
-	printf("\n\n");
-	for (int row = 0; row < graph->rows + 2; ++row) {
-		for (int col = 0; col < graph->cols + 2; ++col) {
-			printf("%c", graph->matrix[row][col].letter);
-		}
-		printf("\n");
-	}
 }
 
 int matrix_enrich(graph_t * graph)
@@ -180,11 +172,7 @@ int matrix_enrich(graph_t * graph)
 	for (int row = 0; row < graph->rows + 2; ++row) {
 		for (int col = 0; col < graph->cols + 2; ++col) {
 			current = &(graph->matrix[row][col]);
-			// NOTE: Implementing the char array of valid characters
-			//  Can simplify this if (if strchr(valid_chars, current->letter))
-			if (current->letter == ' ' || current->letter == '>'
-			    || current->letter == '@' || current->letter == 'a'
-			    || current->letter == '#') {
+			if (strchr(graph->valid_chars, current->letter)){
 				for (int i = 0; i < 4; ++i) {
 					int tgt_x = row + neighbor_x[i];
 					int tgt_y = col + neighbor_y[i];
@@ -196,11 +184,10 @@ int matrix_enrich(graph_t * graph)
 						neighbor =
 						    &(graph->matrix[tgt_x]
 						      [tgt_y]);
-						if (neighbor->value != WALL) {
+						if (strchr(graph->valid_chars, neighbor->letter)) {
 							++count;
-							matrix_add_edge(current,
-									neighbor);
-						current->num_children += 1;
+							matrix_add_edge(current, neighbor);
+							// current->num_children += 1;
 						}
 					}
 				}
@@ -223,7 +210,6 @@ static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 
 int bfs(graph_t * graph)
 {
-	// TODO: Come back to this after confirming new validation works
 	pqueue_t *pqueue = pqueue_create(graph->size);
 	pqueue_insert(pqueue, graph->start->value, graph->start);
 	uint16_t level = 0;
@@ -261,7 +247,11 @@ int bfs(graph_t * graph)
 	vertex_t *node = graph->end;
 	int counter = 0;
 	while (node != node->parent) {
-		node->letter = '.';
+		if (node->letter == '+') {
+			node->letter = '/';
+		} else {
+			node->letter = '.';
+		}
 		llist_push(stack, node);
 		if (!node->parent) {
 			return 0;
@@ -272,48 +262,6 @@ int bfs(graph_t * graph)
 	graph->end->letter = '>';
 	llist_destroy(stack);
 	return 1;
-
-	// NOTE: Everything below works
-	/*
-	   llist_t *queue = llist_create();
-	   llist_enqueue(queue, graph->start);
-	   uint16_t level = 0;
-
-	   while (!llist_is_empty(queue)) {
-	   vertex_t *node = (vertex_t *) llist_dequeue(queue);
-	   edge_t *current = node->neighbors;
-	   if (!current) {
-	   break;
-	   // return;
-	   }
-	   do {
-	   if (!current->destination->level) {
-	   current->destination->level = level + 1;
-	   current->destination->parent = node;
-	   llist_enqueue(queue, current->destination);
-	   }
-	   current = current->next;
-	   } while (current);
-	   level += 1;
-	   }
-
-	   // When here, graph.end.parent = NULL;
-	   llist_t *stack = llist_create();
-	   vertex_t *node = graph->end;
-	   int counter = 0;
-	   while (node != node->parent) {
-	   node->letter = '.';
-	   llist_push(stack, node);
-	   if (!node->parent) {
-	   printf("returning from list\n");
-	   return 0;
-	   }
-	   node = node->parent;
-	   ++counter;
-	   }
-	   graph->end->letter = '>';
-	   return 1;
-	 */
 }
 
 void print_solved(graph_t * graph)
@@ -390,7 +338,3 @@ void matrix_destroy(graph_t * graph)
 
 	free(graph);
 }
-
-// void add_valid_char (graph_t *graph, char flag) {
-
-// }

@@ -12,6 +12,5 @@ int matrix_enrich(graph_t * graph);
 void print_graph(graph_t * graph);
 int bfs(graph_t * graph);
 void print_solved(graph_t * graph);
-void add_valid_char (graph_t *graph, char flag);
 bool matrix_validate_maze(graph_t * graph);
 #endif
