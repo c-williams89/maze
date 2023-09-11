@@ -34,11 +34,11 @@ int main(int argc, char *argv[])
 
 	if (!validate_file(fp)) {
 		fprintf(stderr, "maze: invalid file argument\n");
-		goto EXIT;
+		goto FILE_EXIT;
 	}
 
-        char valid_chars[7] = { 0 };
-        memcpy(valid_chars, "@ >", 3);
+	char valid_chars[7] = { 0 };
+	memcpy(valid_chars, "@ >", 3);
 	int opt;
 	// NOTE: getopt return values:
 	//  -1: All options have been parsed
@@ -47,61 +47,53 @@ int main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, "dDw")) != -1) {
 		switch (opt) {
 		case 'd':
-                        strcat(valid_chars, "+");
+			strcat(valid_chars, "+");
 			break;
 		case 'D':
-                        strcat(valid_chars, "#");
+			strcat(valid_chars, "#");
 			break;
 		case 'w':
-                        strcat(valid_chars, "~");
+			strcat(valid_chars, "~");
 			break;
 		case '?':
-			goto EXIT;
+			goto FILE_EXIT;
 			break;
 		default:
 			break;
 		}
 	}
 
-
 	// HACK: Does each function need to validate against NULL since it has already
 	//  been validated in create and validate_file?
 	graph_t *graph = graph_create(valid_chars);
 	if (!graph) {
 		fprintf(stderr, "graph_create: Error allocating memory\n");
-		goto EXIT;
+		goto FILE_EXIT;
 	}
 
 	if (!get_set_graph_size(fp, graph)) {
-		return 1;
+		goto GRAPH_EXIT;
 	}
 
 	if (!matrix_graph_create(fp, graph)) {
-		printf("broke on create\n");
-		return 1;
+		goto GRAPH_EXIT;
 	}
 
 	if (!matrix_enrich(graph)) {
-		printf("broke on enrich");
-		return 1;
+		goto GRAPH_EXIT;
 	}
 
 	if (!matrix_validate_maze(graph)) {
-		printf("Not a valid maze validate\n");
-		return 1;
+		goto GRAPH_EXIT;
 	}
 
-	if (!dijkstra_search(graph)) {
-                print_graph(graph);
-		printf("Broken in bfs");
-		return 1;
-	}
-
- GOOD_EXIT:
-        print_graph(graph);
+	dijkstra_search(graph);
+	exit_status = 0;
 	print_solved(graph);
+ GRAPH_EXIT:
 	matrix_destroy(graph);
- EXIT:
+ FILE_EXIT:
 	fclose(fp);
+ EXIT:
 	return exit_status;
 }

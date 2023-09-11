@@ -17,6 +17,7 @@ typedef struct vertex_t {
 	int weight;
 	char letter;
 	int level;
+	bool path;
 } vertex_t;
 
 typedef struct edge_t {
@@ -35,6 +36,7 @@ typedef struct graph_t {
 } graph_t;
 
 static void matrix_add_edge(vertex_t * current, vertex_t * neighbor);
+static void matrix_enrich_border(graph_t * graph);
 
 graph_t *graph_create(char *valid_chars)
 {
@@ -45,7 +47,7 @@ graph_t *graph_create(char *valid_chars)
 		goto EXIT;
 	}
 	memcpy(graph->valid_chars, valid_chars, 6);
-EXIT:
+ EXIT:
 	return graph;
 }
 
@@ -71,12 +73,11 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 			graph->rows++;
 			continue;
 		}
-
 		// Compares current against valid characters based on flags
 		if (!strchr(graph->valid_chars, c) && c != '#') {
 			goto EXIT;
 		}
-	
+
 		++cols;
 	}
 
@@ -91,6 +92,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 	// TODO: Consider updating graph->rows and graph->cols += 2 so that it is
 	//  easier to loop over the matrix instead of callocing +2, for i = 1, etc.
 	int exit_status = 0;
+	//TODO: ABC here
 	graph->matrix = calloc(graph->rows + 2, sizeof(vertex_t *));
 	graph->start = NULL;
 	graph->end = NULL;
@@ -99,7 +101,9 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 	for (int row = 0; row < graph->rows + 2; ++row) {
 		graph->matrix[row] = calloc(graph->cols + 2, sizeof(vertex_t));
 		if (!graph->matrix[row]) {
-			printf("This failed\n");
+			perror("matrix_graph_create");
+			errno = 0;
+			goto EXIT;
 		}
 		graph->matrix[row][0].letter = 'a';
 		graph->matrix[row][graph->cols + 1].letter = 'a';
@@ -118,9 +122,11 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 				switch (letter) {
 				case '@':
 					if (graph->start) {
-						fprintf(stderr, "Invalid Map\n");
+						fprintf(stderr,
+							"Invalid Map\n");
 						goto EXIT;
 					}
+
 					graph->start = graph->matrix[row] + col;
 					graph->start->level = INT_MAX;
 					graph->start->value = START;
@@ -129,11 +135,12 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 					break;
 				case '>':
 					if (graph->end) {
-						fprintf(stderr, "Invalid Map\n");
+						fprintf(stderr,
+							"Invalid Map\n");
 						goto EXIT;
 					}
-					graph->size += 1;
 
+					graph->size += 1;
 					graph->end = graph->matrix[row] + col;
 					graph->end->value = END;
 					break;
@@ -146,6 +153,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 					graph->size += 1;
 					graph->matrix[row][col].value = SPACE;
 					break;
+					// TODO: ADD case for water and door
 				}
 				graph->matrix[row][col].letter = letter;
 			}
@@ -160,16 +168,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 	return exit_status;
 }
 
-void print_graph(graph_t * graph)
-{
-	for (int row = 1; row < graph->rows + 1; ++row) {
-		for (int col = 1; col < graph->cols + 1; ++col) {
-			printf("%c", graph->matrix[row][col].letter);
-		}
-		printf("\n");
-	}
-}
-
+// This could only ever return false if the calloc within matrix_add_edge fails
 int matrix_enrich(graph_t * graph)
 {
 	int count = 0;
@@ -182,7 +181,7 @@ int matrix_enrich(graph_t * graph)
 	for (int row = 0; row < graph->rows + 2; ++row) {
 		for (int col = 0; col < graph->cols + 2; ++col) {
 			current = &(graph->matrix[row][col]);
-			if (strchr(graph->valid_chars, current->letter)){
+			if (strchr(graph->valid_chars, current->letter)) {
 				for (int i = 0; i < 4; ++i) {
 					int tgt_x = row + neighbor_x[i];
 					int tgt_y = col + neighbor_y[i];
@@ -194,9 +193,12 @@ int matrix_enrich(graph_t * graph)
 						neighbor =
 						    &(graph->matrix[tgt_x]
 						      [tgt_y]);
-						if (strchr(graph->valid_chars, neighbor->letter)) {
+						if (strchr
+						    (graph->valid_chars,
+						     neighbor->letter)) {
 							++count;
-							matrix_add_edge(current, neighbor);
+							matrix_add_edge(current,
+									neighbor);
 						}
 					}
 				}
@@ -209,10 +211,11 @@ int matrix_enrich(graph_t * graph)
 static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 {
 	edge_t *new_edge = calloc(1, sizeof(*new_edge));
-
-	new_edge->destination = neighbor;
-	new_edge->next = current->neighbors;
-	current->neighbors = new_edge;
+	if (new_edge) {
+		new_edge->destination = neighbor;
+		new_edge->next = current->neighbors;
+		current->neighbors = new_edge;
+	}
 }
 
 int dijkstra_search(graph_t * graph)
@@ -240,8 +243,8 @@ int dijkstra_search(graph_t * graph)
 					current->destination->parent = node;
 					current->destination->weight = weight;
 					pqueue_insert(pqueue,
-						      current->destination->
-						      weight,
+						      current->
+						      destination->weight,
 						      current->destination);
 				}
 			}
@@ -255,13 +258,10 @@ int dijkstra_search(graph_t * graph)
 	vertex_t *node = graph->end;
 	int counter = 0;
 	while (node != node->parent) {
-		if (node->letter == '+') {
-			node->letter = '/';
-		} else {
-			node->letter = '.';
-		}
+		node->path = true;
 		llist_push(stack, node);
 		if (!node->parent) {
+			llist_destroy(stack);
 			return 0;
 		}
 		node = node->parent;
@@ -276,8 +276,17 @@ void print_solved(graph_t * graph)
 {
 	for (int row = 1; row < graph->rows + 1; ++row) {
 		for (int col = 1; col < graph->cols + 1; ++col) {
-			if (graph->matrix[row][col].letter == '!') {
-				graph->matrix[row][col].letter = ' ';
+			vertex_t *curr = &(graph->matrix[row][col]);
+			if (curr->path) {
+				if (curr->letter == '+') {
+					curr->letter = '/';
+				} else if (curr == graph->end) {
+					curr->letter = '>';
+				} else if (curr->letter == '!') {
+					curr->letter = ' ';
+				} else {
+					curr->letter = '.';
+				}
 			}
 			printf("%c", graph->matrix[row][col].letter);
 		}
@@ -288,6 +297,7 @@ void print_solved(graph_t * graph)
 // TODO: make static and call from enrich before returning. Would need to return an int.
 bool matrix_validate_maze(graph_t * graph)
 {
+	matrix_enrich_border(graph);
 	bool b_exit_status = false;
 	llist_t *queue = llist_create();
 	vertex_t *node = &(graph)->matrix[0][0];
@@ -312,7 +322,6 @@ bool matrix_validate_maze(graph_t * graph)
 			    && current->destination->letter != '#') {
 				current->destination->level = level + 1;
 				current->destination->parent = next;
-				current->destination->letter = '!';
 				llist_enqueue(queue, current->destination);
 			}
 			current = current->next;
@@ -325,24 +334,65 @@ bool matrix_validate_maze(graph_t * graph)
 	return b_exit_status;
 }
 
+static void matrix_enrich_border(graph_t * graph)
+{
+	int count = 0;
+
+	vertex_t *current = &(graph->matrix[0][0]);
+	vertex_t *neighbor = NULL;
+
+	int neighbor_x[] = { -1, 0, 1, 0 };
+	int neighbor_y[] = { 0, 1, 0, -1 };
+
+	for (int row = 0; row < graph->rows + 2; ++row) {
+		for (int col = 0; col < graph->cols + 2; ++col) {
+			current = &(graph->matrix[row][col]);
+			if (current->letter != '#') {
+				for (int i = 0; i < 4; ++i) {
+					int tgt_x = row + neighbor_x[i];
+					int tgt_y = col + neighbor_y[i];
+					if ((tgt_x > -1)
+					    && (tgt_x < graph->rows + 2)
+					    && (tgt_y > -1)
+					    && (tgt_y < graph->cols + 2)) {
+						neighbor =
+						    &(graph->matrix[tgt_x]
+						      [tgt_y]);
+						if (neighbor->letter != '#') {
+							++count;
+							matrix_add_edge(current,
+									neighbor);
+						}
+					}
+				}
+			}
+		}
+		return;
+	}
+}
+
 void matrix_destroy(graph_t * graph)
 {
 	if (!graph) {
 		return;
 	}
 
-	for (int row = 0; row < graph->rows + 2; ++row) {
-		for (int col = 0; col < graph->cols; ++col) {
-			edge_t *tmp = graph->matrix[row][col].neighbors;
-			while (tmp) {
-				edge_t *next = tmp->next;
-				free(tmp);
-				tmp = next;
+	if (graph->matrix) {
+		for (int row = 0; row < graph->rows + 2; ++row) {
+			if (graph->matrix[row]) {
+				for (int col = 0; col < graph->cols + 2; ++col) {
+					edge_t *tmp =
+					    graph->matrix[row][col].neighbors;
+					while (tmp) {
+						edge_t *next = tmp->next;
+						free(tmp);
+						tmp = next;
+					}
+				}
+				free(graph->matrix[row]);
 			}
 		}
-		free(graph->matrix[row]);
+		free(graph->matrix);
 	}
-	free(graph->matrix);
-
 	free(graph);
 }
