@@ -91,12 +91,12 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	if (!bfs(graph)) {
+	if (!dijkstra_search(graph)) {
                 print_graph(graph);
 		printf("Broken in bfs");
 		return 1;
 	}
-	
+
  GOOD_EXIT:
         print_graph(graph);
 	print_solved(graph);

@@ -6,7 +6,6 @@
 #include "../include/p_queue.h"
 
 typedef struct node_t {
-	// int data;
 	void *data;
 	int priority;
 	int level;

@@ -88,23 +88,23 @@ START_TEST(test_matrix_enrich) {
 }END_TEST
 
 // bfs only fails when there is no valid route from start to end
-START_TEST(test_bfs_valid) {
+START_TEST(test_dijkstra_search_valid) {
 	FILE *fp = fopen("./data/valid_map.txt", "r");
 	graph_t *graph = graph_create(valid_chars);
 	get_set_graph_size(fp, graph);
 	matrix_graph_create(fp, graph);
 	matrix_enrich(graph);
-	ck_assert_int_eq(bfs(graph), 1);
+	ck_assert_int_eq(dijkstra_search(graph), 1);
 
 }END_TEST
 
-START_TEST(test_bfs_invalid) {
+START_TEST(test_dijkstra_search_invalid) {
 	FILE *fp = fopen("./data/invalid_bfs.txt", "r");
 	graph_t *graph = graph_create(valid_chars);
 	get_set_graph_size(fp, graph);
 	matrix_graph_create(fp, graph);
 	matrix_enrich(graph);
-	ck_assert_int_eq(bfs(graph), 0);
+	ck_assert_int_eq(dijkstra_search(graph), 0);
 }END_TEST
 
 static TFun core_tests[] = {
@@ -114,8 +114,8 @@ static TFun core_tests[] = {
 	test_matrix_graph_create,
 	test_matrix_graph_create_invalid,
 	test_matrix_enrich,
-	test_bfs_valid,
-	test_bfs_invalid,
+	test_dijkstra_search_valid,
+	test_dijkstra_search_invalid,
 	NULL
 };
 
