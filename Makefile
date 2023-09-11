@@ -47,7 +47,7 @@ profile: $(BIN)
 	@mkdir $(DATA_DIR)
 
 clean: 
-	@rm -rf $(BIN) $(OBJ_DIR) $(CHECK) gmon.out
+	@rm -rf $(BIN) $(OBJ_DIR) $(CHECK) $(DATA_DIR) gmon.out
 	
 indent:
 	indent -linux $(SRC_DIR)/*.c

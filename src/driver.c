@@ -7,15 +7,6 @@
 #include "../include/io_helper.h"
 #include "../include/matrix.h"
 
-// TODO: For entire project
-// [ ] Document and code comments
-// [ ] Add ABC's to all library functions
-// [x] Implement optarg, no need for long opts
-// [x] Re-write tests for new graph_t struct design
-// [ ] Write tests for pqueue library
-// [x] Handle memory leak issues
-// [x] create a directory of multiple map .txt files to run against the project
-
 int main(int argc, char *argv[])
 {
 	int exit_status = 1;
@@ -40,10 +31,7 @@ int main(int argc, char *argv[])
 	char valid_chars[7] = { 0 };
 	memcpy(valid_chars, "@ >", 3);
 	int opt;
-	// NOTE: getopt return values:
-	//  -1: All options have been parsed
-	//  '?': Option not in the optstring (invalid)
-	//  ':': Option is missing argument
+
 	while ((opt = getopt(argc, argv, "dDw")) != -1) {
 		switch (opt) {
 		case 'd':
@@ -58,13 +46,9 @@ int main(int argc, char *argv[])
 		case '?':
 			goto FILE_EXIT;
 			break;
-		default:
-			break;
 		}
 	}
 
-	// HACK: Does each function need to validate against NULL since it has already
-	//  been validated in create and validate_file?
 	graph_t *graph = graph_create(valid_chars);
 	if (!graph) {
 		fprintf(stderr, "graph_create: Error allocating memory\n");
@@ -72,7 +56,6 @@ int main(int argc, char *argv[])
 	}
 
 	if (!get_set_graph_size(fp, graph)) {
-		printf("Broke here");
 		goto GRAPH_EXIT;
 	}
 
