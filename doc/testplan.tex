@@ -55,11 +55,34 @@ maze contains both automated and manual testing
         This tests the bfs() function with a maze in which there is no path between the start and end point, ensuring the return value is 0.
     \end{itemize}
     Because of the modular design of the program, and the attempt to reduce iterations over the file or matrix, each function handles a small piece of the overall maze validation, and therefore, maze validation is cascading, with functions such as bfs() not being run unless matrix\_validate\_maze returns 1, which relies on matrix\_enrich returning 1, and so on.
+    Results of successful test run with make check:
+    \begin{lstlisting}[language=bash]
+        100%: Checks: 10, Failures: 0, Errors: 0
+        test/test_io_helper.c:9:P:core:*curr++:0: Passed
+        test/test_io_helper.c:30:P:core:*curr++:0: Passed
+        test/test_matrix.c:36:P:core:*curr++:0: Passed
+        test/test_matrix.c:45:P:core:*curr++:0: Passed
+        test/test_matrix.c:52:P:core:*curr++:0: Passed
+        test/test_matrix.c:67:P:core:*curr++:0: Passed
+        test/test_matrix.c:75:P:core:*curr++:0: Passed
+        test/test_matrix.c:87:P:core:*curr++:0: Passed
+        test/test_matrix.c:97:P:core:*curr++:0: Passed
+        test/test_matrix.c:107:P:core:*curr++:0: Passed        
+    \end{lstlisting}
 
     \subsection{Manual Tests - Valgrind}
     Manual testing of the program is to ensure there are no memory leaks or errors reported by valgrind:
         \begin{lstlisting}[language=bash]
         $ make clean && make debug
         $ valgrind ./maze <FILE> [OPTION]
+        ==6793== HEAP SUMMARY:
+        ==6793==     in use at exit: 0 bytes in 0 blocks
+        ==6793==   total heap usage: 215 allocs, 215 frees, 19,864 bytes allocated
+        ==6793== 
+        ==6793== All heap blocks were freed -- no leaks are possible
+        ==6793== 
+        ==6793== For lists of detected and suppressed errors, rerun with: -s
+        ==6793== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
         \end{lstlisting}
 \end{document}
