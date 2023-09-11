@@ -62,7 +62,7 @@ START_TEST(test_matrix_graph_create)
 	ck_assert_int_eq(matrix_graph_create(fp, graph), 1);
 	ck_assert_ptr_ne(graph->start, NULL);
 	ck_assert_ptr_ne(graph->end, NULL);
-	vertex_t *start = &(graph)->matrix[2][15];
+	vertex_t *start = &(graph)->matrix[2][7];
 	vertex_t *end = &(graph)->matrix[2][4];
 	ck_assert_ptr_eq(start, graph->start);
 	ck_assert_ptr_eq(end, graph->end);
@@ -93,7 +93,7 @@ END_TEST START_TEST(test_matrix_enrich)
 	matrix_graph_create(fp, graph);
 	ck_assert_int_eq(matrix_enrich(graph), 1);
 	ck_assert_ptr_ne(graph->start->neighbors, NULL);
-	vertex_t *start_neigh = &(graph)->matrix[2][16];
+	vertex_t *start_neigh = &(graph)->matrix[2][8];
 	ck_assert_ptr_eq(graph->start->neighbors->destination, start_neigh);
 } END_TEST START_TEST(test_matrix_validate_maze_invalid)
 {
