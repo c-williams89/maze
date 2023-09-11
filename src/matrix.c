@@ -368,7 +368,6 @@ static void matrix_enrich_border(graph_t * graph)
 				}
 			}
 		}
-		return;
 	}
 }
 

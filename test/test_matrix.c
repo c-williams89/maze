@@ -31,13 +31,12 @@ char valid_chars[] = "@ >";
 
 START_TEST(test_graph_create)
 {
-	FILE *fp = fopen("./data/valid_map.txt", "r");
 	graph_t *graph = graph_create(valid_chars);
 	ck_assert_ptr_ne(graph, NULL);
 } END_TEST START_TEST(test_get_set_graph_size)
 {
 	// TODO: put these as part of setup function
-	FILE *fp = fopen("./data/valid_map.txt", "r");
+	FILE *fp = fopen("./test/test_data/valid_map.txt", "r");
 	graph_t *graph = graph_create(valid_chars);
 	if (get_set_graph_size(fp, graph)) {
 		ck_assert_int_eq(graph->cols, 23);

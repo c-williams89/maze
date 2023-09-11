@@ -1,0 +1,17 @@
+echo -e test_invalid_files:
+valgrind ./maze /dev/null 
+valgrind ./maze /dev/zero
+valgrind ./maze /dev/urandom
+valgrind ./maze /test/
+valgrind ./maze test/test.txt
+echo -e test_invalid_chars:
+valgrind ./maze test/test_data/invalid_char.txt
+echo -e test_invalid_start_end:
+valgrind ./maze test/test_data/invalid_start.txt 
+valgrind ./maze test/test_data/invalid_start_mult.txt
+valgrind ./maze test/test_data/invalid_end.txt 
+valgrind ./maze test/test_data/invalid_end_mult.txt
+echo -e test_valid_maze_no_path:
+valgrind ./maze test/test_data/valid_map_no_path.txt
+echo -e test_valid_maze_valid_path:
+valgrind ./maze test/test_data/valid_map.txt
