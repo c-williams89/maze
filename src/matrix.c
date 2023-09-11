@@ -131,7 +131,6 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 					graph->start->level = INT_MAX;
 					graph->start->value = START;
 					graph->start->parent = graph->start;
-					graph->size += 1;
 					break;
 				case '>':
 					if (graph->end) {
@@ -140,22 +139,24 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 						goto EXIT;
 					}
 
-					graph->size += 1;
 					graph->end = graph->matrix[row] + col;
 					graph->end->value = END;
 					break;
 				case '#':
-					graph->size += 1;
-
 					graph->matrix[row][col].value = WALL;
 					break;
 				case ' ':
-					graph->size += 1;
 					graph->matrix[row][col].value = SPACE;
 					break;
-					// TODO: ADD case for water and door
+				case '+':
+					graph->matrix[row][col].value = DOOR;
+					break;
+				case '~':
+					graph->matrix[row][col].value = WATER;
+					break;
 				}
 				graph->matrix[row][col].letter = letter;
+				graph->size += 1;
 			}
 		}
 	}
