@@ -6,7 +6,6 @@
 #include "../include/p_queue.h"
 
 typedef struct node_t {
-	// int data;
 	void *data;
 	int priority;
 	int level;
@@ -91,9 +90,7 @@ static void heapify_up(uint32_t position, node_t * heap)
 		return;
 	}
 	uint32_t parent = (position - 1) / 2;
-	// if (parent < 0) {
-	//         return;
-	// }
+
 	node_t tmp;
 	if (heap[parent].priority > heap[position].priority) {
 		tmp = heap[parent];

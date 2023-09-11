@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -20,7 +21,6 @@ int validate_file(FILE * fp)
 	}
 
 	struct stat path_stat;
-	int fileno(FILE * fp);
 	int fd = fileno(fp);
 
 	// Tests that fstat does not fail

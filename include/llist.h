@@ -11,86 +11,60 @@
 #include "../include/matrix.h"
 
 /**
- * @brief Struct that defines pointer to head node, pthread lock,
- *        and del_f that knows how to delete void*
+ * @brief Opaque data type to interact with linked-list (llist).
  */
 typedef struct llist_t llist_t;
 
 /**
- * @brief Allocates linked-list
+ * @brief Creates an empty list.
  * 
- * @return llist_t* On success, NULL on failure 
+ * @return llist_t* Pointer to link list or NULL on failure
  */
 llist_t *llist_create();
 
 /**
- * @brief Function to delete linked list and free memory
+ * @brief Puts heap allocated data at back of queue.
  * 
- * @param p_llist Linked-list to delete
- */
-// void llist_delete(llist_t **p_llist);
-
-/**
- * @brief Adds void* to linked-list as a queue
+ * @param llist Pointer to the list to store the data.
+ * @param data Void pointer to data to store in llist.
  * 
- * @param llist Linked-list to enqueue() to
- * @param data custom_thing to be added
- * @return true On success
- * @return false On failure
- */
+ * @return True on success, False on failure.
+*/
 bool llist_enqueue(llist_t * llist, void *data);
 
 /**
- * @brief Removes void* from linked-list as a queue
+ * @brief Extracts the oldest element from the queue.
  * 
- * @param llist Linked-list to dequeue() from
- * @param data custom_thing** pointer of place to store data pointer to
- * @return true On success
- * @return false On failure
- */
+ * @param llist Pointer to the list storing the data.
+ * 
+ * @return void* The oldest element in the queue or NULL on failure.
+*/
 void *llist_dequeue(llist_t * llist);
 
 /**
- * @brief Adds void* to linked-list as a stack
+ * @brief Puts heap allocated data at top of stack.
  * 
- * @param llist Linked-list to push() to
- * @param data custom_struct to be added to linked-list
- * @return true On success
- * @return false On failure
- */
+ * @param llist Pointer to the list to store the data.
+ * @param data Void pointer to the data to store in llist.
+ * 
+ * @return True on success, False on failure.
+*/
 bool llist_push(llist_t * llist, void *data);
-
-/**
- * @brief Removes void* from linked-list as a stack
- * 
- * @param llist Linked-list to pop() from
- * @param data custom_struct** pointer of place to store data pointer to
- * @return true On success
- * @return false On failure
- */
-// bool llist_pop(llist_t *llist, vertex_t **data);
 
 /**
  * @brief Checks if linked-list is empty
  * 
- * @param list Linked-list to check
- * @return true Is empty
- * @return false Not empty
+ * @param llist Linked-list to check
+ * 
+ * @return true if empty, else false
  */
 bool llist_is_empty(llist_t * llist);
 
-// Emptys linked list without doing anything to stored pointers
-//
+/**
+ * @brief free() llist and nodes of llist.
+ * 
+ * @param llist linked-list to free. 
+ */
 void llist_destroy(llist_t * llist);
 
-// uint64_t llist_get_size(llist_t *llist);
-
-// vertex_t *llist_find(llist_t *llist, const char *id);
-
-// void llist_print(llist_t *llist, int depth);
-
-// llist_t *llist_duplicate(llist_t *llist);
-
-#endif				/* LLIST_H */
-
-/*** end of file ***/
+#endif

@@ -39,7 +39,13 @@ static void matrix_add_edge(vertex_t * current, vertex_t * neighbor);
 graph_t *graph_create(char *valid_chars)
 {
 	graph_t *graph = calloc(1, sizeof(*graph));
+	if (!graph) {
+		perror("graph_create");
+		errno = 0;
+		goto EXIT;
+	}
 	memcpy(graph->valid_chars, valid_chars, 6);
+EXIT:
 	return graph;
 }
 
@@ -66,11 +72,14 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 			continue;
 		}
 
+		// Compares current against valid characters based on flags
 		if (!strchr(graph->valid_chars, c) && c != '#') {
 			goto EXIT;
 		}
+	
 		++cols;
 	}
+
 	rewind(fp);
 	exit_status = 1;
  EXIT:
@@ -188,7 +197,6 @@ int matrix_enrich(graph_t * graph)
 						if (strchr(graph->valid_chars, neighbor->letter)) {
 							++count;
 							matrix_add_edge(current, neighbor);
-							// current->num_children += 1;
 						}
 					}
 				}
@@ -207,7 +215,7 @@ static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 	current->neighbors = new_edge;
 }
 
-int bfs(graph_t * graph)
+int dijkstra_search(graph_t * graph)
 {
 	pqueue_t *pqueue = pqueue_create(graph->size);
 	pqueue_insert(pqueue, graph->start->value, graph->start);

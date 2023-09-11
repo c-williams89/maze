@@ -49,7 +49,7 @@ bool llist_enqueue(llist_t * llist, void *data)
 void *llist_dequeue(llist_t * list)
 {
 	if (!list || !list->head) {
-		return 0;
+		return NULL;
 	}
 	void *data = list->head->data;
 	struct node_t *tmp = list->head;
