@@ -72,11 +72,14 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 			continue;
 		}
 
+		// Compares current against valid characters based on flags
 		if (!strchr(graph->valid_chars, c) && c != '#') {
 			goto EXIT;
 		}
+	
 		++cols;
 	}
+
 	rewind(fp);
 	exit_status = 1;
  EXIT:
@@ -194,7 +197,6 @@ int matrix_enrich(graph_t * graph)
 						if (strchr(graph->valid_chars, neighbor->letter)) {
 							++count;
 							matrix_add_edge(current, neighbor);
-							// current->num_children += 1;
 						}
 					}
 				}
