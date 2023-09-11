@@ -5,7 +5,7 @@
 
 START_TEST(test_validate_file_valid)
 {
-	FILE *fp = fopen("./data/valid_map.txt", "r");
+	FILE *fp = fopen("./test/test_data/valid_map.txt", "r");
 	ck_assert_int_eq(validate_file(fp), 1);
 } END_TEST START_TEST(test_validate_file_invalid)
 {
