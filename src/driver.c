@@ -32,10 +32,6 @@ int main(int argc, char *argv[])
 	memcpy(valid_chars, "@ >", 3);
 	int opt;
 
-	// NOTE: getopt return values:
-	//  -1: All options have been parsed
-	//  '?': Option not in the optstring (invalid)
-	//  ':': Option is missing argument
 	while ((opt = getopt(argc, argv, "dDw")) != -1) {
 		switch (opt) {
 		case 'd':
@@ -50,8 +46,6 @@ int main(int argc, char *argv[])
 		case '?':
 			goto FILE_EXIT;
 			break;
-		default:
-			break;
 		}
 	}
 
@@ -62,7 +56,6 @@ int main(int argc, char *argv[])
 	}
 
 	if (!get_set_graph_size(fp, graph)) {
-		printf("Broke here");
 		goto GRAPH_EXIT;
 	}
 

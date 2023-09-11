@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <errno.h>
 
 #include "../include/llist.h"
 #include "../include/matrix.h"
@@ -17,6 +18,10 @@ struct llist_t {
 llist_t *llist_create()
 {
 	llist_t *llist = calloc(1, sizeof(*llist));
+	if (!llist) {
+		perror("llist_create");
+		errno = 0;
+	}
 	return llist;
 }
 

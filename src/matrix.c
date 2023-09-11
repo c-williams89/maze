@@ -277,7 +277,7 @@ int dijkstra_search(graph_t * graph)
 	graph->end->letter = '>';
 	llist_destroy(stack);
 	exit_status = 1;
-EXIT:
+ EXIT:
 	return exit_status;
 }
 
@@ -308,6 +308,9 @@ bool matrix_validate_maze(graph_t * graph)
 	matrix_enrich_border(graph);
 	bool b_exit_status = false;
 	llist_t *queue = llist_create();
+	if (!queue) {
+		goto EXIT;
+	}
 	vertex_t *node = &(graph)->matrix[0][0];
 	llist_enqueue(queue, node);
 	uint16_t level = 0;

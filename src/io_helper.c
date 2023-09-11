@@ -23,7 +23,6 @@ int validate_file(FILE * fp)
 	struct stat path_stat;
 	int fd = fileno(fp);
 
-	// Tests that fstat does not fail
 	if (-1 == fstat(fd, &path_stat)) {
 		perror("validate_file: Unable to retrieve file information");
 		errno = 0;
