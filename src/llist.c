@@ -2,7 +2,7 @@
 
 #include "../include/llist.h"
 #include "../include/matrix.h"
-// typef struct vertex_t vertex_t;
+
 struct node_t {
 	struct node_t *next;
 	void *data;		//*data is of type vertex_t

@@ -8,6 +8,7 @@ CFLAGS += -Wvla -Wfloat-equal -lm
 
 DFLAGS := -g3
 VFLAGS += --leak-check=full --track-origins=yes
+PFLAGS := -pg 
 
 SRC_DIR := src
 OBJ_DIR := obj
@@ -15,6 +16,7 @@ DOCS_DIR := docs
 TEST_DIR := test
 HDR_DIR := include
 LIB_DIR := lib
+DATA_DIR := data
 
 LIB := $(wildcard $(LIB_DIR)/*.a)
 SRCS := $(wildcard $(SRC_DIR)/*.c)
@@ -39,6 +41,10 @@ check: $(CHECK)
 valgrind: CFLAGS += $(DFLAGS)
 valgrind: clean $(BIN)
 	@valgrind $(VFLAGS) ./$(BIN) $(ARGS)
+
+profile: CFLAGS += $(PFLAGS)
+profile: $(BIN)
+	@mkdir $(DATA_DIR)
 
 clean: 
 	@rm -rf $(BIN) $(OBJ_DIR) $(CHECK) gmon.out

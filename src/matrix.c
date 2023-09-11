@@ -73,11 +73,8 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 			graph->rows++;
 			continue;
 		}
-		// Compares current against valid characters based on flags
-		// if (!strchr(valid, c)) {
-		// 	goto EXIT;
-		// }
-		if (!strchr(graph->valid_chars, c) && c != '#') {
+
+		if (!strchr(valid, c)) {
 			goto EXIT;
 		}
 
@@ -92,8 +89,6 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 
 int matrix_graph_create(FILE * fp, graph_t * graph)
 {
-	// TODO: Consider updating graph->rows and graph->cols += 2 so that it is
-	//  easier to loop over the matrix instead of callocing +2, for i = 1, etc.
 	int exit_status = 0;
 	//TODO: ABC here
 	graph->matrix = calloc(graph->rows + 2, sizeof(vertex_t *));
@@ -172,7 +167,6 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 	return exit_status;
 }
 
-// This could only ever return false if the calloc within matrix_add_edge fails
 int matrix_enrich(graph_t * graph)
 {
 	int count = 0;
@@ -298,7 +292,6 @@ void print_solved(graph_t * graph)
 	}
 }
 
-// TODO: make static and call from enrich before returning. Would need to return an int.
 bool matrix_validate_maze(graph_t * graph)
 {
 	matrix_enrich_border(graph);
@@ -351,7 +344,7 @@ static void matrix_enrich_border(graph_t * graph)
 	for (int row = 0; row < graph->rows + 2; ++row) {
 		for (int col = 0; col < graph->cols + 2; ++col) {
 			current = &(graph->matrix[row][col]);
-			if (current->letter != '#') {
+			if (current->letter != '#' && !current->neighbors) {
 				for (int i = 0; i < 4; ++i) {
 					int tgt_x = row + neighbor_x[i];
 					int tgt_y = col + neighbor_y[i];
