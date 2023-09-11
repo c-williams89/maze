@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 typedef struct graph_t graph_t;
-graph_t *graph_create(void);
+graph_t *graph_create(char * valid_chars);
 void matrix_destroy(graph_t * graph);
 int get_set_graph_size(FILE * fp, graph_t * graph);
 int matrix_graph_create(FILE * fp, graph_t * graph);

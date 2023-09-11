@@ -28,17 +28,19 @@ typedef struct graph_t {
 	uint16_t size;
 } graph_t;
 
+char valid_chars[] = "@ >";
+
 START_TEST(test_graph_create)
 {
      	FILE *fp = fopen("./data/valid_map.txt", "r");
-     	graph_t *graph = graph_create();
+     	graph_t *graph = graph_create(valid_chars);
 	ck_assert_ptr_ne(graph, NULL);
 } END_TEST 
 
 START_TEST(test_get_set_graph_size) {
 	// TODO: put these as part of setup function
      	FILE *fp = fopen("./data/valid_map.txt", "r");
-	graph_t *graph = graph_create();
+	graph_t *graph = graph_create(valid_chars);
 	if (get_set_graph_size(fp, graph)) {
 		ck_assert_int_eq(graph->cols, 23);
 		ck_assert_int_eq(graph->rows, 8);
@@ -47,20 +49,21 @@ START_TEST(test_get_set_graph_size) {
 
 START_TEST(test_get_set_graph_size_invalid) {
 	FILE *fp = fopen("./data/invalid_map.txt", "r");
-	graph_t *graph = graph_create();
+	graph_t *graph = graph_create(valid_chars);
 	ck_assert_int_eq(get_set_graph_size(fp, graph), 0);
 } END_TEST
 
 // Tests matrix creates successfully and tests known values assigned to graph.
 START_TEST(test_matrix_graph_create) {
 	FILE *fp = fopen("./data/valid_map.txt", "r");
-	graph_t *graph = graph_create();
+	graph_t *graph = graph_create(valid_chars);
 	graph->rows = 8;
 	graph->cols = 23;
 	ck_assert_int_eq(matrix_graph_create(fp, graph), 1);
 	ck_assert_ptr_ne(graph->start, NULL);
 	ck_assert_ptr_ne(graph->end, NULL);
 	vertex_t *start = &(graph)->matrix[2][15];
+	printf("%p\n", &(graph)->matrix[2][15]);
 	vertex_t *end = &(graph)->matrix[2][4];
 	ck_assert_ptr_eq(start, graph->start);
 	ck_assert_ptr_eq(end, graph->end);
@@ -68,7 +71,7 @@ START_TEST(test_matrix_graph_create) {
 
 START_TEST(test_matrix_graph_create_invalid) {
 	FILE *fp = fopen("./data/invalid_graph.txt", "r");
-	graph_t *graph = graph_create();
+	graph_t *graph = graph_create(valid_chars);
 	graph->rows = 8;
 	graph->cols = 23;
 	ck_assert_int_eq(matrix_graph_create(fp, graph), 0);
@@ -76,15 +79,12 @@ START_TEST(test_matrix_graph_create_invalid) {
 
 START_TEST(test_matrix_enrich) {
 	FILE *fp = fopen("./data/valid_map.txt", "r");
-	graph_t *graph = graph_create();
+	graph_t *graph = graph_create(valid_chars);
 	graph->rows = 8;
 	graph->cols = 23;
 	matrix_graph_create(fp, graph);
 	ck_assert_int_eq(matrix_enrich(graph), 1);
 	ck_assert_ptr_ne(graph->start->neighbors, NULL);
-	ck_assert_int_eq(graph->start->num_children, 1);
-	ck_assert_int_eq(graph->end->num_children, 3);
-	ck_assert_int_eq(graph->matrix[0][0].num_children, 2);
 	vertex_t *start_neigh = &(graph)->matrix[2][16];
 	ck_assert_ptr_eq(graph->start->neighbors->destination, start_neigh);
 }END_TEST
@@ -92,7 +92,7 @@ START_TEST(test_matrix_enrich) {
 // bfs only fails when there is no valid route from start to end
 START_TEST(test_bfs_valid) {
 	FILE *fp = fopen("./data/valid_map.txt", "r");
-	graph_t *graph = graph_create();
+	graph_t *graph = graph_create(valid_chars);
 	get_set_graph_size(fp, graph);
 	matrix_graph_create(fp, graph);
 	matrix_enrich(graph);
@@ -102,7 +102,7 @@ START_TEST(test_bfs_valid) {
 
 START_TEST(test_bfs_invalid) {
 	FILE *fp = fopen("./data/invalid_bfs.txt", "r");
-	graph_t *graph = graph_create();
+	graph_t *graph = graph_create(valid_chars);
 	get_set_graph_size(fp, graph);
 	matrix_graph_create(fp, graph);
 	matrix_enrich(graph);

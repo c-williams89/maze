@@ -7,17 +7,6 @@
 #include "../include/io_helper.h"
 #include "../include/matrix.h"
 
-typedef struct opt_t {
-	bool b_wall;
-	bool b_water;
-	bool b_door;
-        // Based on command line args, strncat to valid_chars '+' or '~' to compare against;
-        // When validating character within matrix_enrich, strrchr against this string
-        // to determine whether it is a valid neighbor or not.
-        char *valid_chars;
-        
-} opt_t;
-
 // TODO: For entire project
 // [ ] Document and code comments
 // [ ] Add ABC's to all library functions
@@ -29,13 +18,12 @@ typedef struct opt_t {
 
 int main(int argc, char *argv[])
 {
-	// FILE *fp = stdin;
 	int exit_status = 1;
 	if (1 == argc) {
 		fprintf(stderr, "maze: missing file argument\n");
 		goto EXIT;
 	}
-	// fp = fopen(argv[1], "r");
+
 	FILE *fp = fopen(argv[1], "r");
 	if (!fp) {
 		perror("maze");
@@ -49,12 +37,8 @@ int main(int argc, char *argv[])
 		goto EXIT;
 	}
 
-	opt_t *arg_flags = calloc(1, sizeof(*arg_flags));
-	if (!arg_flags) {
-		fprintf(stderr, "maze: Unable to allocate memory\n");
-		goto EXIT;
-	}
-
+        char valid_chars[7] = { 0 };
+        memcpy(valid_chars, "@ >", 3);
 	int opt;
 	// NOTE: getopt return values:
 	//  -1: All options have been parsed
@@ -63,16 +47,15 @@ int main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, "dDw")) != -1) {
 		switch (opt) {
 		case 'd':
-			arg_flags->b_door = true;
+                        strcat(valid_chars, "+");
 			break;
 		case 'D':
-			arg_flags->b_wall = true;
+                        strcat(valid_chars, "#");
 			break;
 		case 'w':
-			arg_flags->b_water = true;
+                        strcat(valid_chars, "~");
 			break;
 		case '?':
-			free(arg_flags);
 			goto EXIT;
 			break;
 		default:
@@ -80,9 +63,10 @@ int main(int argc, char *argv[])
 		}
 	}
 
+
 	// HACK: Does each function need to validate against NULL since it has already
 	//  been validated in create and validate_file?
-	graph_t *graph = graph_create();
+	graph_t *graph = graph_create(valid_chars);
 	if (!graph) {
 		fprintf(stderr, "graph_create: Error allocating memory\n");
 		goto EXIT;
@@ -106,15 +90,15 @@ int main(int argc, char *argv[])
 		printf("Not a valid maze validate\n");
 		return 1;
 	}
-	// NOTE: Need to pass args struct to bfs
+
 	if (!bfs(graph)) {
+                print_graph(graph);
 		printf("Broken in bfs");
 		return 1;
 	}
-	// print_solved(graph);
  GOOD_EXIT:
+        print_graph(graph);
 	print_solved(graph);
-	free(arg_flags);
 	matrix_destroy(graph);
  EXIT:
 	fclose(fp);
