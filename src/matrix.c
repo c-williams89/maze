@@ -32,13 +32,17 @@ typedef struct graph_t {
 	uint16_t rows;
 	uint16_t cols;
 	uint16_t size;
+	char valid_chars[7];
 } graph_t;
 
 static void matrix_add_edge(vertex_t * current, vertex_t * neighbor);
 
-graph_t *graph_create(void)
+graph_t *graph_create(char *valid_chars)
 {
 	graph_t *graph = calloc(1, sizeof(*graph));
+	memcpy(graph->valid_chars, valid_chars, 6);
+	// strncat(graph->valid_chars, "@ >#", 4);
+	// graph->valid_chars = "@ >#";
 	return graph;
 }
 
@@ -50,7 +54,7 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 		errno = 0;
 		goto EXIT;
 	}
-	const char *valid_chars = "@ >#+~";
+	// const char *valid_chars = "@ >#+~";
 	graph->cols = 0;
 	graph->rows = 1;
 	uint16_t cols = 0;
@@ -64,7 +68,8 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 			graph->rows++;
 			continue;
 		}
-		if (!strchr(valid_chars, c)) {
+		
+		if (!strchr(graph->valid_chars, c) && c != '#') {
 			goto EXIT;
 		}
 		++cols;
@@ -133,9 +138,6 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 					graph->size += 1;
 					graph->matrix[row][col].value = SPACE;
 					break;
-					// case '\n':
-					//         continue;
-					// break;
 				}
 				graph->matrix[row][col].letter = letter;
 			}
@@ -388,3 +390,7 @@ void matrix_destroy(graph_t * graph)
 
 	free(graph);
 }
+
+// void add_valid_char (graph_t *graph, char flag) {
+
+// }

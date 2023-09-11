@@ -29,13 +29,12 @@ typedef struct opt_t {
 
 int main(int argc, char *argv[])
 {
-	// FILE *fp = stdin;
 	int exit_status = 1;
 	if (1 == argc) {
 		fprintf(stderr, "maze: missing file argument\n");
 		goto EXIT;
 	}
-	// fp = fopen(argv[1], "r");
+
 	FILE *fp = fopen(argv[1], "r");
 	if (!fp) {
 		perror("maze");
@@ -55,6 +54,8 @@ int main(int argc, char *argv[])
 		goto EXIT;
 	}
 
+        char valid_chars[7] = { 0 };
+        memcpy(valid_chars, "@ >", 3);
 	int opt;
 	// NOTE: getopt return values:
 	//  -1: All options have been parsed
@@ -63,12 +64,15 @@ int main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, "dDw")) != -1) {
 		switch (opt) {
 		case 'd':
+                        strcat(valid_chars, "+");
 			arg_flags->b_door = true;
 			break;
 		case 'D':
+                        strcat(valid_chars, "#");
 			arg_flags->b_wall = true;
 			break;
 		case 'w':
+                        strcat(valid_chars, "~");
 			arg_flags->b_water = true;
 			break;
 		case '?':
@@ -80,9 +84,10 @@ int main(int argc, char *argv[])
 		}
 	}
 
+
 	// HACK: Does each function need to validate against NULL since it has already
 	//  been validated in create and validate_file?
-	graph_t *graph = graph_create();
+	graph_t *graph = graph_create(valid_chars);
 	if (!graph) {
 		fprintf(stderr, "graph_create: Error allocating memory\n");
 		goto EXIT;
