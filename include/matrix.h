@@ -16,7 +16,7 @@ typedef struct graph_t graph_t;
  * 
  * @return Pointer to graph on success, NULL on failure. 
  */
-graph_t *graph_create(char * valid_chars);
+graph_t *graph_create(char *valid_chars);
 
 /**
  * @brief Determines size of maze and sets graph variables.
