@@ -90,8 +90,13 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 int matrix_graph_create(FILE * fp, graph_t * graph)
 {
 	int exit_status = 0;
-	//TODO: ABC here
 	graph->matrix = calloc(graph->rows + 2, sizeof(vertex_t *));
+	if (!graph->matrix) {
+		perror("matrix_graph_create");
+		errno = 0;
+		goto EXIT;
+	}
+
 	graph->start = NULL;
 	graph->end = NULL;
 	char letter = '\0';
@@ -103,6 +108,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 			errno = 0;
 			goto EXIT;
 		}
+
 		graph->matrix[row][0].letter = 'a';
 		graph->matrix[row][graph->cols + 1].letter = 'a';
 
@@ -121,7 +127,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 				case '@':
 					if (graph->start) {
 						fprintf(stderr,
-							"Invalid Map\n");
+							"invalid map: multiple start points\n");
 						goto EXIT;
 					}
 
@@ -133,7 +139,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 				case '>':
 					if (graph->end) {
 						fprintf(stderr,
-							"Invalid Map\n");
+							"invalid map: multiple end points\n");
 						goto EXIT;
 					}
 
@@ -159,7 +165,6 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 		}
 	}
 	if (!graph->start || !graph->end) {
-		fprintf(stderr, "Invalid Map\n");
 		goto EXIT;
 	}
 	exit_status = 1;
@@ -218,7 +223,11 @@ static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 
 int dijkstra_search(graph_t * graph)
 {
+	int exit_status = 0;
 	pqueue_t *pqueue = pqueue_create(graph->size);
+	if (!pqueue) {
+		goto EXIT;
+	}
 	pqueue_insert(pqueue, graph->start->value, graph->start);
 	uint16_t level = 0;
 	while (!pqueue_is_empty(pqueue)) {
@@ -241,8 +250,8 @@ int dijkstra_search(graph_t * graph)
 					current->destination->parent = node;
 					current->destination->weight = weight;
 					pqueue_insert(pqueue,
-						      current->
-						      destination->weight,
+						      current->destination->
+						      weight,
 						      current->destination);
 				}
 			}
@@ -260,14 +269,16 @@ int dijkstra_search(graph_t * graph)
 		llist_push(stack, node);
 		if (!node->parent) {
 			llist_destroy(stack);
-			return 0;
+			goto EXIT;
 		}
 		node = node->parent;
 		++counter;
 	}
 	graph->end->letter = '>';
 	llist_destroy(stack);
-	return 1;
+	exit_status = 1;
+EXIT:
+	return exit_status;
 }
 
 void print_solved(graph_t * graph)
