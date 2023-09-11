@@ -31,7 +31,7 @@ TEST_LIBS := -lcheck -lm -pthread -lrt -lsubunit
 
 all: $(BIN)
 
-debug: CFLAGS += $(DFLAGS) -pg
+debug: CFLAGS += $(DFLAGS)
 debug: $(BIN)
 
 check: $(CHECK)

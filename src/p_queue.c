@@ -20,8 +20,6 @@ struct pqueue_t {
 	uint32_t capacity;
 };
 
-// TODO: Write custom function to compare value within vertex_t struct
-
 static void heapify_up(uint32_t position, node_t * heap);
 static void heapify_down(uint32_t position, uint64_t size, node_t * heap);
 
