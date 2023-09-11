@@ -11,7 +11,7 @@
 #include "../include/matrix.h"
 
 /**
- * @brief Opaque data type for to interact with llist API.
+ * @brief Opaque data type to interact with linked-list (llist).
  */
 typedef struct llist_t llist_t;
 
@@ -55,8 +55,8 @@ bool llist_push(llist_t * llist, void *data);
  * @brief Checks if linked-list is empty
  * 
  * @param llist Linked-list to check
- * @return true Is empty
- * @return false Not empty
+ * 
+ * @return true if empty, else false
  */
 bool llist_is_empty(llist_t * llist);
 

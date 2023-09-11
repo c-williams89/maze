@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
 		printf("Broken in bfs");
 		return 1;
 	}
+	
  GOOD_EXIT:
         print_graph(graph);
 	print_solved(graph);
