@@ -11,7 +11,6 @@ typedef struct vertex_t {
 	int weight;
 	char letter;
 	int level;
-	int num_children;
 } vertex_t;
 
 typedef struct edge_t {
@@ -63,7 +62,6 @@ START_TEST(test_matrix_graph_create) {
 	ck_assert_ptr_ne(graph->start, NULL);
 	ck_assert_ptr_ne(graph->end, NULL);
 	vertex_t *start = &(graph)->matrix[2][15];
-	printf("%p\n", &(graph)->matrix[2][15]);
 	vertex_t *end = &(graph)->matrix[2][4];
 	ck_assert_ptr_eq(start, graph->start);
 	ck_assert_ptr_eq(end, graph->end);

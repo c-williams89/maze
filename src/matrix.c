@@ -17,7 +17,6 @@ typedef struct vertex_t {
 	int weight;
 	char letter;
 	int level;
-	// int num_children;
 } vertex_t;
 
 typedef struct edge_t {
@@ -109,8 +108,8 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 				}
 				switch (letter) {
 				case '@':
-				printf("%d %d\n", row, col);
 					if (graph->start) {
+						fprintf(stderr, "Invalid Map\n");
 						goto EXIT;
 					}
 					graph->start = graph->matrix[row] + col;
@@ -121,6 +120,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 					break;
 				case '>':
 					if (graph->end) {
+						fprintf(stderr, "Invalid Map\n");
 						goto EXIT;
 					}
 					graph->size += 1;
@@ -143,6 +143,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 		}
 	}
 	if (!graph->start || !graph->end) {
+		fprintf(stderr, "Invalid Map\n");
 		goto EXIT;
 	}
 	exit_status = 1;
@@ -197,8 +198,6 @@ int matrix_enrich(graph_t * graph)
 	return 1;
 }
 
-// BUG: 3920 bytes lost from this function somehow still. When run with debug flags, no errors,
-//  But 1 error when no debug flags are passed.
 static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 {
 	edge_t *new_edge = calloc(1, sizeof(*new_edge));
@@ -242,6 +241,7 @@ int bfs(graph_t * graph)
 		}
 		level += 1;
 	}
+
 	pqueue_destroy(pqueue);
 	llist_t *stack = llist_create();
 	vertex_t *node = graph->end;
@@ -323,7 +323,7 @@ void matrix_destroy(graph_t * graph)
 		return;
 	}
 
-	for (int row = 0; row < graph->rows; ++row) {
+	for (int row = 0; row < graph->rows + 2; ++row) {
 		for (int col = 0; col < graph->cols; ++col) {
 			edge_t *tmp = graph->matrix[row][col].neighbors;
 			while (tmp) {
