@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
 	if (!validate_file(fp)) {
 		fprintf(stderr, "maze: invalid file argument\n");
-		goto EXIT;
+		goto FILE_EXIT;
 	}
 
         char valid_chars[7] = { 0 };
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
                         strcat(valid_chars, "~");
 			break;
 		case '?':
-			goto EXIT;
+			goto FILE_EXIT;
 			break;
 		default:
 			break;
@@ -69,39 +69,40 @@ int main(int argc, char *argv[])
 	graph_t *graph = graph_create(valid_chars);
 	if (!graph) {
 		fprintf(stderr, "graph_create: Error allocating memory\n");
-		goto EXIT;
+		goto FILE_EXIT;
 	}
 
+	// Should break here with invalid_char.txt
+	// Breaking here is not considered a valid file.
 	if (!get_set_graph_size(fp, graph)) {
-		return 1;
+		goto GRAPH_EXIT;
 	}
 
+	// Breaking here is not considered a valid file either.
 	if (!matrix_graph_create(fp, graph)) {
 		printf("broke on create\n");
-		return 1;
+		goto GRAPH_EXIT;
 	}
 
 	if (!matrix_enrich(graph)) {
 		printf("broke on enrich");
-		return 1;
+		goto GRAPH_EXIT;
 	}
 
+	// Breaking here is not considered a valid file.
 	if (!matrix_validate_maze(graph)) {
 		printf("Not a valid maze validate\n");
-		return 1;
+		goto GRAPH_EXIT;
 	}
 
-	if (!dijkstra_search(graph)) {
-                print_graph(graph);
-		printf("Broken in bfs");
-		return 1;
-	}
-
- GOOD_EXIT:
-        print_graph(graph);
+	dijkstra_search(graph);
+        exit_status = 0;
 	print_solved(graph);
+	// print_solved(graph);
+GRAPH_EXIT:
 	matrix_destroy(graph);
- EXIT:
+FILE_EXIT:
 	fclose(fp);
+EXIT:
 	return exit_status;
 }

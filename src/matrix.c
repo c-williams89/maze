@@ -91,6 +91,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 	// TODO: Consider updating graph->rows and graph->cols += 2 so that it is
 	//  easier to loop over the matrix instead of callocing +2, for i = 1, etc.
 	int exit_status = 0;
+	//TODO: ABC here
 	graph->matrix = calloc(graph->rows + 2, sizeof(vertex_t *));
 	graph->start = NULL;
 	graph->end = NULL;
@@ -99,7 +100,9 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 	for (int row = 0; row < graph->rows + 2; ++row) {
 		graph->matrix[row] = calloc(graph->cols + 2, sizeof(vertex_t));
 		if (!graph->matrix[row]) {
-			printf("This failed\n");
+			perror("matrix_graph_create");
+			errno = 0;
+			goto EXIT;
 		}
 		graph->matrix[row][0].letter = 'a';
 		graph->matrix[row][graph->cols + 1].letter = 'a';
@@ -146,6 +149,7 @@ int matrix_graph_create(FILE * fp, graph_t * graph)
 					graph->size += 1;
 					graph->matrix[row][col].value = SPACE;
 					break;
+				// TODO: ADD case for water and door
 				}
 				graph->matrix[row][col].letter = letter;
 			}
@@ -170,6 +174,7 @@ void print_graph(graph_t * graph)
 	}
 }
 
+// This could only ever return false if the calloc within matrix_add_edge fails
 int matrix_enrich(graph_t * graph)
 {
 	int count = 0;
@@ -209,10 +214,11 @@ int matrix_enrich(graph_t * graph)
 static void matrix_add_edge(vertex_t * current, vertex_t * neighbor)
 {
 	edge_t *new_edge = calloc(1, sizeof(*new_edge));
-
-	new_edge->destination = neighbor;
-	new_edge->next = current->neighbors;
-	current->neighbors = new_edge;
+	if (new_edge) {
+		new_edge->destination = neighbor;
+		new_edge->next = current->neighbors;
+		current->neighbors = new_edge;
+	}
 }
 
 int dijkstra_search(graph_t * graph)
@@ -325,6 +331,9 @@ bool matrix_validate_maze(graph_t * graph)
 	return b_exit_status;
 }
 
+//  NOTE: This currently works, rewriting to handle free() from any point in the
+//  program, graph creation or callocs.
+/*
 void matrix_destroy(graph_t * graph)
 {
 	if (!graph) {
@@ -344,5 +353,30 @@ void matrix_destroy(graph_t * graph)
 	}
 	free(graph->matrix);
 
+	free(graph);
+}
+*/
+
+void matrix_destroy(graph_t *graph) {
+	if (!graph) {
+		return;
+	}
+
+	if (graph->matrix) {
+		for (int row = 0; row < graph->rows + 2; ++row) {
+			if (graph->matrix[row]) {
+				for (int col = 0; col < graph->cols + 2; ++ col) {
+					edge_t *tmp = graph->matrix[row][col].neighbors;
+					while (tmp) {
+						edge_t *next = tmp->next;
+						free(tmp);
+						tmp = next;
+					}
+				}
+				free(graph->matrix[row]);
+			}
+		}
+		free(graph->matrix);
+	}
 	free(graph);
 }
