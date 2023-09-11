@@ -10,11 +10,11 @@
 // TODO: For entire project
 // [ ] Document and code comments
 // [ ] Add ABC's to all library functions
-// [ ] Implement optarg, no need for long opts
-// [ ] Re-write tests for new graph_t struct design
+// [x] Implement optarg, no need for long opts
+// [x] Re-write tests for new graph_t struct design
 // [ ] Write tests for pqueue library
-// [ ] Handle memory leak issues
-// [ ] create a directory of multiple map .txt files to run against the project
+// [x] Handle memory leak issues
+// [x] create a directory of multiple map .txt files to run against the project
 
 int main(int argc, char *argv[])
 {
@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (!get_set_graph_size(fp, graph)) {
+		printf("Broke here");
 		goto GRAPH_EXIT;
 	}
 

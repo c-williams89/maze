@@ -8,7 +8,7 @@
 #include "../include/llist.h"
 #include "../include/p_queue.h"
 
-enum { SPACE = 1, WALL = 11, WATER = 3, END = 1, START = 0, DOOR = 3 };
+enum { SPACE = 1, WALL = 11, WATER = 3, END = 1, START = 0, DOOR = 2 };
 
 typedef struct vertex_t {
 	struct vertex_t *parent;
@@ -59,7 +59,7 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 		errno = 0;
 		goto EXIT;
 	}
-
+	char valid[] = "@ >#~+";
 	graph->cols = 0;
 	graph->rows = 1;
 	uint16_t cols = 0;
@@ -74,6 +74,9 @@ int get_set_graph_size(FILE * fp, graph_t * graph)
 			continue;
 		}
 		// Compares current against valid characters based on flags
+		// if (!strchr(valid, c)) {
+		// 	goto EXIT;
+		// }
 		if (!strchr(graph->valid_chars, c) && c != '#') {
 			goto EXIT;
 		}
